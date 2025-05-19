@@ -8,7 +8,7 @@ from tensorflow.keras.utils import to_categorical
 
 # === Config ===
 DATA_PATH = "data_static"  # cartella con sottocartelle per ogni gesto
-LABELS = ["stop","1", "2", "3"]
+LABELS = ["0","1", "2", "3"] #0:stop 
 NUM_FEATURES = 126  # 21 punti * 3 coordinate * 2 mani
 
 # === Caricamento dati ===
@@ -18,19 +18,17 @@ for label_index, label in enumerate(LABELS):
     folder = os.path.join(DATA_PATH, label)
     for file in os.listdir(folder):
         if file.endswith(".npy"):
-            frame = np.load(os.path.join(folder, file))  # shape (126,)
+            frame = np.load(os.path.join(folder, file))  # shape (126,) #funziona solo se ci sono 126 valori quindi da capire il num di feature
             if frame.shape == (NUM_FEATURES,):
                 X.append(frame)
                 y.append(label_index)
 
-X = np.array(X)
+X = np.array(X)    #quindi questo dovrebbe essere una lista di 280 array (70x4) ognuno contenente 126 elementi
 #formato categorical perchè usiamo categorical loss
 y = to_categorical(np.array(y), num_classes=len(LABELS))
 
 # === Preprocessing ===
-
-#Normalizzazione
-scaler = StandardScaler()
+scaler = StandardScaler()      #normalizzazione -> standardizzazione z-score
 X = scaler.fit_transform(X)
 
 # === Train/test split ===
