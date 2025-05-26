@@ -1,5 +1,6 @@
 {
   "Version": 1,
+<<<<<<< HEAD
   "WorkspaceRootPath": "C:\\Users\\franc\\Documents\\Universit\u00E0\\Secondo\\Soluzioni di grafica 3D\\Project\\gesture_recognition\\",
   "Documents": [
     {
@@ -7,10 +8,15 @@
       "RelativeMoniker": "D:0:0:{97A72CC0-F73D-4B6F-A363-74A264B67D4B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\heartrotator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
+=======
+  "WorkspaceRootPath": "C:\\Users\\marco\\Desktop\\PoliTo\\Soluzioni 3D\\project\\gesture_recognition\\",
+  "Documents": [],
+>>>>>>> 0a039032f174a8ceb69e3c4c3263f54e750d2d89
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
+<<<<<<< HEAD
       "DocumentGroups": [
         {
           "DockedWidth": 200,
@@ -32,6 +38,9 @@
           ]
         }
       ]
+=======
+      "DocumentGroups": []
+>>>>>>> 0a039032f174a8ceb69e3c4c3263f54e750d2d89
     }
   ]
 }
