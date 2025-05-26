@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using System.Net;
 using System.Net.Sockets;
@@ -44,46 +43,67 @@ public class UDPReceiver : MonoBehaviour
         {
             switch (lastReceivedData)
             {
-                case "zoom":
-                    ZoomModel();
-                    break;
-                case "rotate":
-                    RotateModel();
-                    break;
-                case "translate":
-                    TranslateModel();
-                    break;
+                case "zoom_in":
+                    ZoomModel(1); break;
+                case "zoom_out":
+                    ZoomModel(-1); break;
+
+                case "translate_right":
+                    TranslateModel(Vector3.right); break;
+                case "translate_left":
+                    TranslateModel(Vector3.left); break;
+                case "translate_up":
+                    TranslateModel(Vector3.up); break;
+                case "translate_down":
+                    TranslateModel(Vector3.down); break;
+
+                case "rotate_right":
+                    RotateModel(1); break;
+                case "rotate_left":
+                    RotateModel(-1); break;
+                case "rotate_up":
+                    RotateModelUpDown(-1); break;
+                case "rotate_down":
+                    RotateModelUpDown(1); break;
+
                 case "stop":
-                    StopMovement();
-                    break;
+                    StopMovement(); break;
             }
 
             lastReceivedData = "";
         }
     }
 
-    void ZoomModel()
+    void ZoomModel(int direction)
     {
-        Debug.Log("Zoom...");
-        // Aggiungi qui codice per zoomare il modello
+        Debug.Log("Zoom " + (direction > 0 ? "In" : "Out"));
+        // Muove in avanti (Z negativo) o indietro (Z positivo) di 20 unità
+        transform.position += Vector3.forward * 0.2f * direction;
     }
 
-    void RotateModel()
+    void TranslateModel(Vector3 dir)
     {
-        Debug.Log("Rotate...");
-        // Aggiungi qui codice per ruotare il modello
+        Debug.Log("Translate " + dir);
+        transform.position += dir * 0.2f; // 0.2f = ~20 pixel world space (dipende dalla scala)
     }
 
-    void TranslateModel()
-    {
-        Debug.Log("Translate...");
-        // Aggiungi qui codice per traslare il modello
-    }
+    void RotateModel(int direction)
+{
+    Debug.Log("Rotate Y (Local) " + (direction > 0 ? "Right" : "Left"));
+    transform.Rotate(Vector3.up, 5f * direction, Space.Self); // RUOTA SU SE STESSO
+}
+
+void RotateModelUpDown(int direction)
+{
+    Debug.Log("Rotate X (Local) " + (direction > 0 ? "Down" : "Up"));
+    transform.Rotate(Vector3.right, 5f * direction, Space.Self); // RUOTA SU SE STESSO
+}
+
 
     void StopMovement()
     {
-        Debug.Log("Stop...");
-        // Aggiungi qui codice per fermare il movimento
+        Debug.Log("Stop movement");
+        // Placeholder per logica futura
     }
 
     void OnApplicationQuit()
