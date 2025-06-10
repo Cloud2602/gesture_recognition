@@ -20,9 +20,9 @@ mp_draw = mp.solutions.drawing_utils
 cap = cv2.VideoCapture(0)
 
 prev_pos = None
-#mode = "traslazione"  # cambia dinamicamente se vuoi
+mode = "traslazione"  # cambia dinamicamente se vuoi
 #mode = "zoom"  # o "rotazione"
-mode = "rotazione"  # per rotazione
+#mode = "rotazione"  # per rotazione
 while True:
     success, img = cap.read()
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
