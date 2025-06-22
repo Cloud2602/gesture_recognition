@@ -8,6 +8,7 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classifica
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.callbacks import ModelCheckpoint
 
 # === Funzione di normalizzazione ===
 def normalize_hand(landmarks):
@@ -54,8 +55,19 @@ model = Sequential([
 
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
+
+# Callback per salvare il modello con la miglior accuratezza di validazione
+checkpoint_cb = ModelCheckpoint(
+    "best_model.h5",               # Nome del file da salvare
+    monitor='val_accuracy',        # Metri da monitorare
+    save_best_only=True,           # Salva solo il modello migliore
+    mode='max',                    # Massimizzare la metrica
+    verbose=1                      # Output testuale al salvataggio
+)
+
+
 # === Allenamento ===
-history = model.fit(X_train, y_train, epochs=40, batch_size=16, validation_split=0.1)
+history = model.fit(X_train, y_train, epochs=100, batch_size=16, validation_split=0.1, callbacks=[checkpoint_cb])
 
 # === Plot Accuratezza e Loss ===
 plt.figure(figsize=(12, 5))
