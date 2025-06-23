@@ -10,15 +10,9 @@ from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.callbacks import ModelCheckpoint
 
-# === Funzione di normalizzazione ===
-def normalize_hand(landmarks):
-    wrist = landmarks[0]
-    landmarks -= wrist
-    scale = np.linalg.norm(landmarks[9] - wrist)  # indice MCP
-    return landmarks / scale if scale > 0 else landmarks
 
 # === Config ===
-DATA_PATH = "/content/gesture_recognition/dataset_landmarks_augumantation"
+DATA_PATH = "/content/gesture_recognition/augumented_dataset"
 LABELS = ["0", "1", "2", "3"]
 NUM_FEATURES = 126  # 21 punti * 3 coordinate * 2 mani
 
@@ -29,10 +23,9 @@ for file_name in os.listdir(DATA_PATH):
         file_path = os.path.join(DATA_PATH, file_name)
         frame = np.load(file_path)
         for sample in frame:
-            sample = normalize_hand(sample)
             sample = sample.reshape(-1)
             X.append(sample)
-            Y.append(int(file_name.split(".")[0].split("_")[1]))
+            Y.append(int(file_name.split(".")[0]))
 
 X = np.array(X)
 Y = to_categorical(np.array(Y), num_classes=len(LABELS))
