@@ -78,25 +78,25 @@ public class UDPReceiver : MonoBehaviour
     {
         Debug.Log("Zoom " + (direction > 0 ? "In" : "Out"));
         // Muove in avanti (Z negativo) o indietro (Z positivo) di 20 unità
-        transform.position += Vector3.forward * 0.2f * direction;
+        transform.position += Vector3.forward * 1f * direction;
     }
 
     void TranslateModel(Vector3 dir)
     {
         Debug.Log("Translate " + dir);
-        transform.position += dir * 0.2f; // 0.2f = ~20 pixel world space (dipende dalla scala)
+        transform.position += dir * 1f; // 0.2f = ~20 pixel world space (dipende dalla scala)
     }
 
     void RotateModel(int direction)
 {
     Debug.Log("Rotate Y (Local) " + (direction > 0 ? "Right" : "Left"));
-    transform.Rotate(Vector3.up, 5f * direction, Space.Self); // RUOTA SU SE STESSO
+    transform.Rotate(Vector3.up, 15f * direction, Space.Self); // RUOTA SU SE STESSO
 }
 
 void RotateModelUpDown(int direction)
 {
     Debug.Log("Rotate X (Local) " + (direction > 0 ? "Down" : "Up"));
-    transform.Rotate(Vector3.right, 5f * direction, Space.Self); // RUOTA SU SE STESSO
+    transform.Rotate(Vector3.right, 15f * direction, Space.Self); // RUOTA SU SE STESSO
 }
 
 

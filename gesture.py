@@ -48,7 +48,7 @@ last_prediction = None
 stable_count = 0
 display_label = "..."
 
-def track_movement(mode, results, frame):
+def track_movement(mode, results, frame, prev_pos):
     # === GESTIONE MOVIMENTO IN BASE ALLA MODALITÀ STABILE ===
     
         for hand_landmarks in results.multi_hand_landmarks:
@@ -59,7 +59,7 @@ def track_movement(mode, results, frame):
             thumb_pos = (int(thumb.x * w), int(thumb.y * h))
             index_pos = (int(index.x * w), int(index.y * h))
             center_pos = (int((thumb.x + index.x)/2 * w), int((thumb.y + index.y)/2 * h))
-            t = 5  # soglia movimento
+            t = 3  # soglia movimento
 
             if mode == "zoom":
                 dist = ((thumb_pos[0] - index_pos[0])**2 + (thumb_pos[1] - index_pos[1])**2) ** 0.5
@@ -69,7 +69,7 @@ def track_movement(mode, results, frame):
                     send_command("zoom_out")
 
             elif mode == "traslazione":
-                if 'prev_pos' in locals():
+                if prev_pos is not None:
                     dx = center_pos[0] - prev_pos[0]
                     dy = center_pos[1] - prev_pos[1]
 
@@ -86,7 +86,7 @@ def track_movement(mode, results, frame):
                 prev_pos = center_pos
 
             elif mode == "rotazione":
-                if 'prev_pos' in locals():
+                if prev_pos is not None:
                     dx = center_pos[0] - prev_pos[0]
                     dy = center_pos[1] - prev_pos[1]
 
@@ -101,7 +101,7 @@ def track_movement(mode, results, frame):
                         elif dy < -t:
                             send_command("rotate_up")
                 prev_pos = center_pos
-
+        return prev_pos
 def predict_gesture(frame, right_hand, left_hand, last_prediction,stable_count, display_label= None):
         stable_threshold = 20  # numero minimo di frame consecutivi per mostrare la predizione
         for hand_landmarks, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
@@ -132,9 +132,9 @@ def predict_gesture(frame, right_hand, left_hand, last_prediction,stable_count, 
             current_label = "altro"
 
         
-        # === VISUALIZZA ===
+        """# === VISUALIZZA ===
         cv2.putText(frame, f"{display_label}", (10, 30),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)  
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)  """
         # === STABILIZZAZIONE ===
         #print(f"Predizione corrente: {current_label}, Ultima predizione: {last_prediction}, Stabilità: {stable_count}")
         if current_label == last_prediction:
@@ -152,6 +152,7 @@ def predict_gesture(frame, right_hand, left_hand, last_prediction,stable_count, 
 mode = None
 previous_mode = None
 flag = 0  
+prev_pos = None  # posizione centrale mano precedente
 while True:
     ret, frame = cap.read()
     if not ret:
@@ -170,10 +171,10 @@ while True:
         "flag [0,1,2] 0=attesa, 1=modalità scelta, 2=modalità attiva"
         if mode == "stop" :
             if flag == 0 or flag ==2:
-                
                 flag = 1
                 mode = None
                 previous_mode = None
+                prev_pos = None
                 print("Modalità attesa")
         if flag == 1:
                 if mode != None:
@@ -184,15 +185,17 @@ while True:
         if flag == 2:
             if previous_mode != None:
                 if previous_mode == "stop":
+                    print("Modalità stop attiva")
                     send_command("stop")
                 else:
                     print("Modalità attiva : ", previous_mode)
-                    track_movement(previous_mode, results, frame)
+                    prev_pos = track_movement(previous_mode, results, frame, prev_pos)
 
     else:
         display_label = "🖐️ Nessuna mano"
 
-    
+    cv2.putText(frame, f"Modalita: {previous_mode}", (10, 70),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
     cv2.imshow("Predizione in tempo reale", frame)
 
