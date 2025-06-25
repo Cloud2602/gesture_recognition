@@ -1,10 +1,8 @@
 import cv2
-import os
 import mediapipe as mp
 import numpy as np
 import socket
 from tensorflow.keras.models import load_model
-from sklearn.preprocessing import StandardScaler
 
 
 # === UDP SETUP ===
@@ -17,86 +15,52 @@ def send_command(command):
     sock.sendto(message, (UDP_IP, UDP_PORT))
     print(f"[Python] Inviato comando: {command}")
 
-model = load_model("best_model.h5")
+# === CONFIGURAZIONE ===
+model_path = 'best_model.h5'
+mean = np.load("scaler_mean.npy")
+scale = np.load("scaler_scale.npy")
+confidence_threshold = 0.9  # sotto questa soglia → "altro"
+
+
+# === MAPPATURA CLASSI ===
 label_map = {
+    0: "stop",
     1: "zoom",
     2: "rotazione",
     3: "traslazione"
 }
-stable_mode = None
-predicted_mode = None
-same_prediction_count = 0
-PREDICTION_THRESHOLD = 20
 
-def normalize_hand(landmarks):
-    wrist = landmarks[0]
-    landmarks -= wrist
-    scale = np.linalg.norm(landmarks[9] - wrist)
-    return landmarks / scale if scale > 0 else landmarks
+# === CARICA MODELLO ===
+model = load_model(model_path)
+print("✅ Modello caricato!")
 
-def extract_keypoints_multi(results):
-    lh = np.zeros((21, 3))
-    rh = np.zeros((21, 3))
-    if results.multi_hand_landmarks and results.multi_handedness:
-        for hand_landmarks, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
-            label = handedness.classification[0].label  # 'Left' o 'Right'
-            print (f"Rilevata mano: {label}")
-            landmarks = np.array([[lm.x, lm.y, lm.z] for lm in hand_landmarks.landmark])
-            #landmarks = normalize_hand(landmarks)
-            if label == "Left":
-                rh = landmarks
-            elif label == "Right":
-                lh = landmarks
-    return np.concatenate([lh.flatten(), rh.flatten()])
-
-
-
-mean = np.load("scaler_mean.npy")
-scale = np.load("scaler_scale.npy")
-# === MediaPipe SETUP ===
+# === SETUP MEDIAPIPE ===
 mp_hands = mp.solutions.hands
-hands = mp_hands.Hands(min_detection_confidence=0.7)
-mp_draw = mp.solutions.drawing_utils
+hands = mp_hands.Hands(static_image_mode=False, max_num_hands=2,
+                       min_detection_confidence=0.7, min_tracking_confidence=0.5)
+mp_drawing = mp.solutions.drawing_utils
 
+# === WEBCAM ===
 cap = cv2.VideoCapture(0)
 
-prev_pos = None
-mode = None
+# === STABILIZZATORE DI PREDIZIONE ===
+last_prediction = None
+stable_count = 0
+display_label = "..."
 
-while True:
-    success, img = cap.read()
-    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    result = hands.process(img_rgb)
+def track_movement(mode, results, frame):
+    # === GESTIONE MOVIMENTO IN BASE ALLA MODALITÀ STABILE ===
+    
+        for hand_landmarks in results.multi_hand_landmarks:
+            thumb = hand_landmarks.landmark[4]
+            index = hand_landmarks.landmark[8]
 
-    if result.multi_hand_landmarks:
-        for handLms in result.multi_hand_landmarks:
-            mp_draw.draw_landmarks(img, handLms, mp_hands.HAND_CONNECTIONS)
-            # === Predizione modalità ===
-            keypoints = extract_keypoints_multi(result)
-            keypoints = (keypoints - mean) / scale
-            prediction = model.predict(np.expand_dims(keypoints, axis=0))
-            print(f"Predizione grezza: {prediction}")
-            raw_prediction = int(np.argmax(prediction))  # Per ottenere 1,2,3
-            print(f"Predizione grezza (intero): {raw_prediction}")
-            predicted_mode = label_map.get(raw_prediction)
-
-            if predicted_mode == stable_mode:
-                same_prediction_count += 1
-            else:
-                same_prediction_count = 1
-                stable_mode = predicted_mode
-
-            if same_prediction_count >= PREDICTION_THRESHOLD:
-                mode = stable_mode
-            """# Coordinate Landmark
-            thumb = handLms.landmark[4]
-            index = handLms.landmark[8]
-
-            h, w, _ = img.shape
+            h, w, _ = frame.shape
             thumb_pos = (int(thumb.x * w), int(thumb.y * h))
             index_pos = (int(index.x * w), int(index.y * h))
             center_pos = (int((thumb.x + index.x)/2 * w), int((thumb.y + index.y)/2 * h))
-            t = 5
+            t = 5  # soglia movimento
+
             if mode == "zoom":
                 dist = ((thumb_pos[0] - index_pos[0])**2 + (thumb_pos[1] - index_pos[1])**2) ** 0.5
                 if dist < 40:
@@ -105,10 +69,10 @@ while True:
                     send_command("zoom_out")
 
             elif mode == "traslazione":
-                if prev_pos:
+                if 'prev_pos' in locals():
                     dx = center_pos[0] - prev_pos[0]
                     dy = center_pos[1] - prev_pos[1]
-                    
+
                     if abs(dx) > abs(dy):
                         if dx > t:
                             send_command("translate_right")
@@ -119,10 +83,10 @@ while True:
                             send_command("translate_down")
                         elif dy < -t:
                             send_command("translate_up")
-
                 prev_pos = center_pos
+
             elif mode == "rotazione":
-                if prev_pos:
+                if 'prev_pos' in locals():
                     dx = center_pos[0] - prev_pos[0]
                     dy = center_pos[1] - prev_pos[1]
 
@@ -136,10 +100,104 @@ while True:
                             send_command("rotate_down")
                         elif dy < -t:
                             send_command("rotate_up")
+                prev_pos = center_pos
 
-                prev_pos = center_pos"""
-            cv2.putText(img, f"Modalita: {mode}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
+def predict_gesture(frame, right_hand, left_hand, last_prediction,stable_count, display_label= None):
+        stable_threshold = 20  # numero minimo di frame consecutivi per mostrare la predizione
+        for hand_landmarks, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
+            mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+            
+            label = handedness.classification[0].label
+            label = "Left" if label == "Right" else "Right"  # inversione logica
 
-    cv2.imshow("Gesture Control", img)
+            landmarks = [coord for lm in hand_landmarks.landmark for coord in (lm.x, lm.y, lm.z)]
+
+            if label == "Right":
+                right_hand = landmarks
+            elif label == "Left":
+                left_hand = landmarks
+
+        # === COMBINA, STANDARDIZZA, PREDICI ===
+        combined = right_hand + left_hand
+        input_data = np.array([combined])
+        input_data = (input_data - mean) / scale
+        prediction = model.predict(input_data, verbose=0)
+        predicted_index = int(np.argmax(prediction))
+        confidence = float(np.max(prediction))
+        #print(f"Predizione grezza: {prediction}, Indice: {predicted_index}, Confidenza: {confidence:.2f}")
+
+        if confidence >= confidence_threshold:
+            current_label = label_map.get(predicted_index, "altro")
+        else:
+            current_label = "altro"
+
+        
+        # === VISUALIZZA ===
+        cv2.putText(frame, f"{display_label}", (10, 30),
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)  
+        # === STABILIZZAZIONE ===
+        #print(f"Predizione corrente: {current_label}, Ultima predizione: {last_prediction}, Stabilità: {stable_count}")
+        if current_label == last_prediction:
+            stable_count += 1
+            #print("Stable count:", stable_count)
+        else:
+            stable_count = 1
+            last_prediction = current_label
+
+        if stable_count >= stable_threshold:
+            display_label = current_label
+            #print(f"Predizione stabile: {display_label}")
+            stable_count = 0    
+        return display_label, last_prediction, stable_count
+mode = None
+previous_mode = None
+flag = 0  
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    frame = cv2.flip(frame, 1)  # effetto specchio
+    image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    results = hands.process(image_rgb)
+
+    # Landmark inizializzati a zero
+    right_hand = [0.0] * (21 * 3)
+    left_hand = [0.0] * (21 * 3)
+    if results.multi_hand_landmarks and results.multi_handedness:
+        mode, last_prediction, stable_count = predict_gesture(frame, right_hand, left_hand, last_prediction, stable_count)
+        print(f"Modalità corrente: {mode},Conteggio stabile: {stable_count}")
+        "flag [0,1,2] 0=attesa, 1=modalità scelta, 2=modalità attiva"
+        if mode == "stop" :
+            if flag == 0 or flag ==2:
+                
+                flag = 1
+                mode = None
+                previous_mode = None
+                print("Modalità attesa")
+        if flag == 1:
+                if mode != None:
+                    flag = 2
+                    print("Modalità scelta : ", mode)
+                    previous_mode= mode
+                    mode = None
+        if flag == 2:
+            if previous_mode != None:
+                if previous_mode == "stop":
+                    send_command("stop")
+                else:
+                    print("Modalità attiva : ", previous_mode)
+                    track_movement(previous_mode, results, frame)
+
+    else:
+        display_label = "🖐️ Nessuna mano"
+
+    
+
+    cv2.imshow("Predizione in tempo reale", frame)
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
+cap.release()
+cv2.destroyAllWindows()
