@@ -62,6 +62,7 @@ def track_movement(mode, results, frame, prev_pos):
             t = 3  # soglia movimento
 
             if mode == "zoom":
+                send_command("mode_zoom")
                 dist = ((thumb_pos[0] - index_pos[0])**2 + (thumb_pos[1] - index_pos[1])**2) ** 0.5
                 if dist < 40:
                     send_command("zoom_in")
@@ -69,6 +70,7 @@ def track_movement(mode, results, frame, prev_pos):
                     send_command("zoom_out")
 
             elif mode == "traslazione":
+                send_command("mode_translate")
                 if prev_pos is not None:
                     dx = center_pos[0] - prev_pos[0]
                     dy = center_pos[1] - prev_pos[1]
@@ -86,6 +88,7 @@ def track_movement(mode, results, frame, prev_pos):
                 prev_pos = center_pos
 
             elif mode == "rotazione":
+                send_command("mode_rotate")
                 if prev_pos is not None:
                     dx = center_pos[0] - prev_pos[0]
                     dy = center_pos[1] - prev_pos[1]
