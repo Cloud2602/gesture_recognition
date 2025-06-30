@@ -16,9 +16,10 @@ def send_command(command):
     print(f"[Python] Inviato comando: {command}")
 
 # === CONFIGURAZIONE ===
-model_path = 'best_model.h5'
-mean = np.load("scaler_mean.npy")
-scale = np.load("scaler_scale.npy")
+model_path = './with_mediapipe_z/best_model.h5'
+mean = np.load('./with_mediapipe_z/scaler_mean.npy')
+scale = np.load('./with_mediapipe_z/scaler_scale.npy')
+
 confidence_threshold = 0.9  # sotto questa soglia → "altro"
 
 
@@ -183,13 +184,14 @@ while True:
                 if mode != None:
                     flag = 2
                     print("Modalità scelta : ", mode)
+                    send_command("choose_mode")
                     previous_mode= mode
                     mode = None
         if flag == 2:
             if previous_mode != None:
                 if previous_mode == "stop":
                     print("Modalità stop attiva")
-                    send_command("stop")
+                    send_command("default")
                 else:
                     print("Modalità attiva : ", previous_mode)
                     prev_pos = track_movement(previous_mode, results, frame, prev_pos)

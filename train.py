@@ -12,7 +12,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint
 
 
 # === Config ===
-DATA_PATH = "/content/gesture_recognition/augumented_dataset"
+DATA_PATH = "/content/data_augumented"
 LABELS = ["0", "1", "2", "3"]
 NUM_FEATURES = 126  # 21 punti * 3 coordinate * 2 mani
 
