@@ -100,7 +100,7 @@ public class MenuController : MonoBehaviour
         #endif
     }
 
-    private void OnApplicationQuit() //  Aggiunto
+    private void OnApplicationQuit() 
     {
         if (pythonProcess != null && !pythonProcess.HasExited)
         {
