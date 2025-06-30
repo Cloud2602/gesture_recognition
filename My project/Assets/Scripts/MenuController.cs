@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections;
-
+using System.Diagnostics;
 public class MenuController : MonoBehaviour
 {
     public CameraZoom cameraZoom;
@@ -9,7 +9,7 @@ public class MenuController : MonoBehaviour
     public GameObject InstructionPanel; 
 
     private bool hasStarted = false;
-
+    private Process pythonProcess; 
     private void Start()
     {
         // Nascondi instruction panel all'avvio
@@ -22,7 +22,43 @@ public class MenuController : MonoBehaviour
         if (!hasStarted)
         {
             hasStarted = true;
+
+            
+            StartPythonScript();
+
             StartCoroutine(StartSequence());
+        }
+    }
+
+    private void StartPythonScript()
+    {
+        string pythonExePath = "C:/Users/franc/anaconda3/envs/technologies_dm/python.exe"; // oppure "python3" o il path completo, es: "C:/Python39/python.exe"
+        string scriptPath = Application.dataPath + "/Scripts/External/gesture.py"; // cambia il path se serve
+
+        ProcessStartInfo start = new ProcessStartInfo();
+        start.FileName = pythonExePath;
+        start.Arguments = "\"" + scriptPath + "\"";
+        start.UseShellExecute = false;
+        start.RedirectStandardOutput = true;
+        start.RedirectStandardError = true;
+        start.CreateNoWindow = true;
+
+        Process process = new Process();
+        process.StartInfo = start;
+
+        process.OutputDataReceived += (sender, args) => UnityEngine.Debug.Log("PYTHON: " + args.Data);
+        process.ErrorDataReceived += (sender, args) => UnityEngine.Debug.LogError("PYTHON ERROR: " + args.Data);
+        pythonProcess = new Process(); 
+        pythonProcess.StartInfo = start;
+        try
+        {
+            pythonProcess.Start();
+            pythonProcess.BeginOutputReadLine();
+            pythonProcess.BeginErrorReadLine();
+        }
+        catch (System.Exception e)
+        {
+            UnityEngine.Debug.LogError("Errore avvio Python: " + e.Message);
         }
     }
 
@@ -53,7 +89,7 @@ public class MenuController : MonoBehaviour
 
     public void OnSettingsPressed()
     {
-        Debug.Log("Settings aperto (da implementare)");
+        //Debug.Log("Settings aperto (da implementare)");
     }
 
     public void OnQuitPressed()
@@ -62,5 +98,22 @@ public class MenuController : MonoBehaviour
         #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
         #endif
+    }
+
+    private void OnApplicationQuit() //  Aggiunto
+    {
+        if (pythonProcess != null && !pythonProcess.HasExited)
+        {
+            try
+            {
+                pythonProcess.Kill();
+                pythonProcess.Dispose();
+                UnityEngine.Debug.Log("Processo Python terminato.");
+            }
+            catch (System.Exception e)
+            {
+                UnityEngine.Debug.LogWarning("Errore durante la chiusura del processo Python: " + e.Message);
+            }
+        }
     }
 }
