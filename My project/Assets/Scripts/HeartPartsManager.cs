@@ -21,7 +21,7 @@ public class HeartPartsManager : MonoBehaviour
     public Toggle toggleRightVentricle;
     public Toggle toggleVenaCava;
 
-    void Start()
+    public void OnStartPressed()
     {
         // Collega eventi toggle → visibilità
         toggleAorta.onValueChanged.AddListener((val) => aorta.SetActive(val));
