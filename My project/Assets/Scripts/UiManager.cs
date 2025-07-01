@@ -65,7 +65,7 @@ public class UIManager : MonoBehaviour
             case "waiting":
                 modalitaText.text = "Mode: Waiting...";
                 suggerimentiPanel.SetActive(true);
-                CreaMessaggioConIcona("Show two hands for choice mode", handsOpenSprite);
+                CreaMessaggioConIcona("Choice mode", handsOpenSprite);
                 break;
 
             case "choose_mode":
@@ -74,25 +74,25 @@ public class UIManager : MonoBehaviour
                 CreaLegenda("Zoom", zoomSprite);
                 CreaLegenda("Rotation", rotateSprite);
                 CreaLegenda("Translation", translateSprite);
-                CreaMessaggioConIcona("Show two hands to reposition heart", handsOpenSprite);
+                CreaMessaggioConIcona("Reset Heart", handsOpenSprite);
                 break;
 
             case "zoom":
                 modalitaText.text = "Mode: Zoom";
                 suggerimentiPanel.SetActive(true);
-                CreaMessaggioConIcona("Show two hands for choice mode", handsOpenSprite);
+                CreaMessaggioConIcona("Choice mode", handsOpenSprite);
                 break;
 
             case "rotate":
                 modalitaText.text = "Mode: Rotation";
                 suggerimentiPanel.SetActive(true);
-                CreaMessaggioConIcona("Show two hands for choice mode", handsOpenSprite);
+                CreaMessaggioConIcona("Choice mode", handsOpenSprite);
                 break;
 
             case "translate":
                 modalitaText.text = "Mode: Translation";
                 suggerimentiPanel.SetActive(true);
-                CreaMessaggioConIcona("Show two hands for choice mode", handsOpenSprite);
+                CreaMessaggioConIcona("Choice mode", handsOpenSprite);
                 break;
         }
     }
