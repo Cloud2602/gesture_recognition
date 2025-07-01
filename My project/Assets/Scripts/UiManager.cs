@@ -15,8 +15,6 @@ public class UIManager : MonoBehaviour
     public Sprite translateSprite;
     public Sprite handsOpenSprite;
 
-    private string modalitaCorrente = "idle";
-
     public void OnStartPremuto()
     {
         modalitaCorrente = "waiting";
@@ -35,38 +33,27 @@ public class UIManager : MonoBehaviour
         {
             case "mode_zoom":
                 modalitaCorrente = "zoom";
+                AggiornaUI();
                 break;
             case "mode_rotate":
                 modalitaCorrente = "rotate";
+                AggiornaUI();
                 break;
             case "mode_translate":
                 modalitaCorrente = "translate";
-                break;
-            case "default":
-                modalitaCorrente = "waiting";
-                break;
-            default:
-                modalitaCorrente = "idle";
+                AggiornaUI();
                 break;
         }
 
-        AggiornaUI();
+        
     }
 
     private void AggiornaUI()
     {
-        // Cancella contenuto precedente
-        foreach (Transform child in suggerimentiPanel.transform)
-            Destroy(child.gameObject);
 
         // Visualizza modalità attuale
         switch (modalitaCorrente)
         {
-            case "idle":
-                modalitaText.text = "";
-                suggerimentiPanel.SetActive(false);
-                break;
-
             case "waiting":
                 modalitaText.text = "Mode: Waiting...";
                 suggerimentiPanel.SetActive(true);
@@ -79,6 +66,7 @@ public class UIManager : MonoBehaviour
                 CreaLegenda("Zoom", zoomSprite);
                 CreaLegenda("Rotation", rotateSprite);
                 CreaLegenda("Translation", translateSprite);
+                CreaMessaggioConIcona("Show two hands to reposition heart", handsOpenSprite);
                 break;
 
             case "zoom":
