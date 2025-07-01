@@ -89,6 +89,9 @@ public class MenuController : MonoBehaviour
         // 5. Mostra instruction panel
         if (InstructionPanel != null)
             InstructionPanel.SetActive(true);
+
+        if (HeartPartsPanel != null)
+            HeartPartsPanel.SetActive(true);
     }
 
     
