@@ -292,7 +292,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 87, y: 300, z: 1700}
-  m_LocalScale: {x: 2, y: 3.4020772, z: 3.7389643}
+  m_LocalScale: {x: 1.0698149, y: 1.8197964, z: 1.9999999}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1083641733}
@@ -327,7 +327,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   port: 5065
-  uiManager: {fileID: 0}
+  uiManager: {fileID: 497161413}
 --- !u!1 &52932243
 GameObject:
   m_ObjectHideFlags: 0
@@ -3406,6 +3406,8 @@ MonoBehaviour:
   toggleRightAtrium: {fileID: 763316537}
   toggleRightVentricle: {fileID: 1297540403}
   toggleVenaCava: {fileID: 998306356}
+  volumePanel: {fileID: 930354841}
+  volumeLabel: {fileID: 692017108}
 --- !u!4 &1381609318
 Transform:
   m_ObjectHideFlags: 0
