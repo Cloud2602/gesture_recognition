@@ -15,6 +15,8 @@ public class UIManager : MonoBehaviour
     public Sprite translateSprite;
     public Sprite handsOpenSprite;
 
+    private string modalitaCorrente = "idle";
+
     public void OnStartPremuto()
     {
         modalitaCorrente = "waiting";
