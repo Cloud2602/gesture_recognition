@@ -10,6 +10,7 @@ public class UDPReceiver : MonoBehaviour
     UdpClient client;
     public int port = 5065;
     string lastReceivedData = "";
+    public UIManager uiManager;
 
     private Vector3 initialPosition;  // 🔸 Posizione iniziale salvata
 
