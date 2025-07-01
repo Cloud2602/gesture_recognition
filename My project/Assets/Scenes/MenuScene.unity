@@ -861,6 +861,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 33478cf1c6ec5444992c66076fd20a3e, type: 3}
   m_PrefabInstance: {fileID: 336408488}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &337656461 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c7d8823dc4e98a04f8a8a0eb728fd0ac, type: 3}
+  m_PrefabInstance: {fileID: 1264685412}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &398531815
 GameObject:
   m_ObjectHideFlags: 0
@@ -1747,6 +1752,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 785470095}
   m_CullTransparentMesh: 1
+--- !u!1 &841996661 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: f7150c21a7a6b554fb9a54ab03964419, type: 3}
+  m_PrefabInstance: {fileID: 500500512}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &856198732
 GameObject:
   m_ObjectHideFlags: 0
@@ -2785,6 +2795,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1205796254}
   m_CullTransparentMesh: 1
+--- !u!1 &1210010417 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 21e29a422a0d4224cbb15ab49861c594, type: 3}
+  m_PrefabInstance: {fileID: 1616382956}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1264685412
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3166,13 +3181,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9e0ffa3e26d50a4aa6e69d0d3e5629c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  aorta: {fileID: 0}
-  leftAtrium: {fileID: 0}
-  leftVentricle: {fileID: 0}
-  pulmonaryArtery: {fileID: 0}
-  rightAtrium: {fileID: 0}
-  rightVentricle: {fileID: 0}
-  venaCava: {fileID: 0}
+  aorta: {fileID: 1627343709}
+  leftAtrium: {fileID: 2014782305}
+  leftVentricle: {fileID: 841996661}
+  pulmonaryArtery: {fileID: 1210010417}
+  rightAtrium: {fileID: 337656461}
+  rightVentricle: {fileID: 1649100719}
+  venaCava: {fileID: 2006990589}
   toggleAorta: {fileID: 702158385}
   toggleLeftAtrium: {fileID: 398531817}
   toggleLeftVentricle: {fileID: 1110107467}
@@ -3591,6 +3606,16 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 21e29a422a0d4224cbb15ab49861c594, type: 3}
   m_PrefabInstance: {fileID: 1616382956}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1627343709 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 582ad8684d419704cb4a7daf5829198f, type: 3}
+  m_PrefabInstance: {fileID: 28825160}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1649100719 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 7794deed22644384d8ab636d8e5b3801, type: 3}
+  m_PrefabInstance: {fileID: 1279458014}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1664921242
 GameObject:
@@ -4447,6 +4472,16 @@ MonoBehaviour:
   zoomSpeed: 1.5
   targetFOV: 30
   uiGroup: {fileID: 767889043}
+--- !u!1 &2006990589 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 33478cf1c6ec5444992c66076fd20a3e, type: 3}
+  m_PrefabInstance: {fileID: 336408488}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2014782305 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 5cb199476f3e607409c6abb1ddd7f2e9, type: 3}
+  m_PrefabInstance: {fileID: 1184535886}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2023330914
 GameObject:
   m_ObjectHideFlags: 0
