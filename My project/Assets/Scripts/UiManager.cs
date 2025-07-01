@@ -52,6 +52,10 @@ public class UIManager : MonoBehaviour
 
     private void AggiornaUI()
     {
+         // Cancella contenuto precedente
+        foreach (Transform child in suggerimentiPanel.transform)
+            Destroy(child.gameObject);
+
 
         // Visualizza modalità attuale
         switch (modalitaCorrente)
