@@ -638,6 +638,7 @@ MonoBehaviour:
   uiGroupToHide: {fileID: 767889039}
   heart: {fileID: 1083641732}
   InstructionPanel: {fileID: 241846466}
+  HeartPartsPanel: {fileID: 740925202}
 --- !u!4 &264256239
 Transform:
   m_ObjectHideFlags: 0

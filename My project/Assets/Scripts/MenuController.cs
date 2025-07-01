@@ -7,6 +7,7 @@ public class MenuController : MonoBehaviour
     public GameObject uiGroupToHide;
     public GameObject heart;
     public GameObject InstructionPanel; 
+    public GameObject HeartPartsPanel;
 
     private bool hasStarted = false;
     private Process pythonProcess; 
@@ -15,6 +16,9 @@ public class MenuController : MonoBehaviour
         // Nascondi instruction panel all'avvio
         if (InstructionPanel != null)
             InstructionPanel.SetActive(false);
+
+        if (HeartPartsPanel != null)
+            HeartPartsPanel.SetActive(false);
     }
 
     public void OnStartPressed()
@@ -87,10 +91,7 @@ public class MenuController : MonoBehaviour
             InstructionPanel.SetActive(true);
     }
 
-    public void OnSettingsPressed()
-    {
-        //Debug.Log("Settings aperto (da implementare)");
-    }
+    
 
     public void OnQuitPressed()
     {
