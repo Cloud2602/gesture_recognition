@@ -21,7 +21,7 @@ mean = np.load('./with_real_z/scaler_mean.npy')
 scale = np.load('./with_real_z/scaler_scale.npy')
 confidence_threshold = 0.9
 radius = 40  # per smoothing profondità
-depth_scale = 0.001  # solitamente 1mm
+depth_scale = 0.0001  # solitamente 1mm
 
 label_map = {
     0: "stop",
@@ -36,7 +36,7 @@ print("✅ Modello caricato!")
 # === MediaPipe Setup ===
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(static_image_mode=False, max_num_hands=2,
-                       min_detection_confidence=0.7, min_tracking_confidence=0.5)
+                       min_detection_confidence=0.2, min_tracking_confidence=0.5)
 mp_drawing = mp.solutions.drawing_utils
 
 # === RealSense Setup ===
@@ -76,10 +76,9 @@ def get_landmark_xyz(landmarks, depth_img, h, w):
     for lm in landmarks.landmark:
         x_px = int(lm.x * w)
         y_px = int(lm.y * h)
-        if 0 <= x_px < w and 0 <= y_px < h:
-            z = get_valid_depth_avg(depth_img, x_px, y_px, radius) * depth_scale
-        else:
-            z = 0.0
+        
+        z = get_valid_depth_avg(depth_img, x_px, y_px, radius) * depth_scale
+        
         xyz.extend([lm.x, lm.y, z])
     return xyz
 
@@ -96,7 +95,7 @@ def predict_gesture(frame, results, right_hand, left_hand, last_prediction, stab
             right_hand = xyz_landmarks
         else:
             left_hand = xyz_landmarks
-
+        dominant_hand_label = label
     combined = right_hand + left_hand
     input_data = np.array([combined])
     input_data = (input_data - mean) / scale
@@ -118,10 +117,15 @@ def predict_gesture(frame, results, right_hand, left_hand, last_prediction, stab
     else:
         display_label = "..."
 
-    return display_label, last_prediction, stable_count
+    return display_label, last_prediction, stable_count, dominant_hand_label 
 
-def track_movement(mode, results, frame, prev_pos):
-    for hand_landmarks in results.multi_hand_landmarks:
+def track_movement(mode, results, frame, prev_pos, tracked_hand, hand_count):
+    for hand_landmarks, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
+        label = handedness.classification[0].label
+        label = "Left" if label == "Right" else "Right"
+
+        if label != tracked_hand:
+            continue  # ❌ ignora le mani che non sono quella tracciata
         thumb = hand_landmarks.landmark[4]
         index = hand_landmarks.landmark[8]
         h, w, _ = frame.shape
@@ -131,7 +135,7 @@ def track_movement(mode, results, frame, prev_pos):
         center_pos = (int((thumb.x + index.x)/2 * w), int((thumb.y + index.y)/2 * h))
         t = 3
 
-        if mode == "zoom":
+        if mode == "zoom" and hand_count == 1:
             send_command("mode_zoom")
             dist = ((thumb_pos[0] - index_pos[0])**2 + (thumb_pos[1] - index_pos[1])**2) ** 0.5
             if dist < 40:

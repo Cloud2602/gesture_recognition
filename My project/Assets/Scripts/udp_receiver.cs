@@ -12,11 +12,11 @@ public class UDPReceiver : MonoBehaviour
     string lastReceivedData = "";
     public UIManager uiManager;
 
-    private Vector3 initialPosition;  // 🔸 Posizione iniziale salvata
+    private Vector3 initialPosition;  
 
     void Start()
     {
-        // 🔹 Memorizza la posizione iniziale all'avvio
+        //  Memorizza la posizione iniziale all'avvio
         initialPosition = transform.position;
 
         receiveThread = new Thread(new ThreadStart(ReceiveData));
@@ -136,7 +136,7 @@ public class UDPReceiver : MonoBehaviour
         // Placeholder
     }
 
-    // 🔸 Funzione per tornare alla posizione iniziale
+    //  Funzione per tornare alla posizione iniziale
     void ResetToInitialPosition()
     {
         Debug.Log("Reset alla posizione iniziale");
