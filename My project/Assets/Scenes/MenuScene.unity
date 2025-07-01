@@ -2373,8 +2373,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1083641733}
-  - component: {fileID: 1083641735}
   - component: {fileID: 1083641734}
+  - component: {fileID: 1083641735}
   m_Layer: 0
   m_Name: Heart
   m_TagString: Untagged
