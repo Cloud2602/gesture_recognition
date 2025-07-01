@@ -27,41 +27,56 @@ public class HeartPartsManager : MonoBehaviour
     public TextMeshProUGUI volumeLabel;
 
     public void OnStartPressed()
+{
+    // Altri toggle → visibilità
+    toggleAorta.onValueChanged.AddListener((val) => aorta.SetActive(val));
+    toggleLeftAtrium.onValueChanged.AddListener((val) => leftAtrium.SetActive(val));
+    toggleLeftVentricle.onValueChanged.AddListener((val) => leftVentricle.SetActive(val));
+    togglePulmonaryArtery.onValueChanged.AddListener((val) => pulmonaryArtery.SetActive(val));
+    toggleRightAtrium.onValueChanged.AddListener((val) => rightAtrium.SetActive(val));
+    toggleRightVentricle.onValueChanged.AddListener((val) => rightVentricle.SetActive(val));
+    toggleVenaCava.onValueChanged.AddListener((val) => venaCava.SetActive(val));
+
+    // Solo le camere coinvolte aggiornano il volume
+    toggleLeftAtrium.onValueChanged.AddListener((val) => OnToggleChanged());
+    toggleLeftVentricle.onValueChanged.AddListener((val) => OnToggleChanged());
+    toggleRightAtrium.onValueChanged.AddListener((val) => OnToggleChanged());
+    toggleRightVentricle.onValueChanged.AddListener((val) => OnToggleChanged());
+    toggleAorta.onValueChanged.AddListener((val) => OnToggleChanged());
+    togglePulmonaryArtery.onValueChanged.AddListener((val) => OnToggleChanged());
+    toggleVenaCava.onValueChanged.AddListener((val) => OnToggleChanged());
+
+
+    OnToggleChanged();
+}
+   void OnToggleChanged()
     {
-        // Collega eventi toggle → visibilità
-        toggleAorta.onValueChanged.AddListener((val) => aorta.SetActive(val));
-        toggleLeftAtrium.onValueChanged.AddListener((val) => leftAtrium.SetActive(val));
-        toggleLeftVentricle.onValueChanged.AddListener((val) => leftVentricle.SetActive(val));
-        togglePulmonaryArtery.onValueChanged.AddListener((val) => pulmonaryArtery.SetActive(val));
-        toggleRightAtrium.onValueChanged.AddListener((val) => rightAtrium.SetActive(val));
-        toggleRightVentricle.onValueChanged.AddListener((val) => rightVentricle.SetActive(val));
-        toggleVenaCava.onValueChanged.AddListener((val) => venaCava.SetActive(val));
+        int cameraCount = 0;
+        string selected = "";
 
-        // Nascondi inizialmente il volume
-        volumePanel.SetActive(false);
-    }
+        if (toggleRightAtrium.isOn) { cameraCount++; selected = "Right Atrium"; }
+        if (toggleRightVentricle.isOn) { cameraCount++; selected = "Right Ventricle"; }
+        if (toggleLeftAtrium.isOn) { cameraCount++; selected = "Left Atrium"; }
+        if (toggleLeftVentricle.isOn) { cameraCount++; selected = "Left Ventricle"; }
 
-    void OnToggleChanged()
-    {
-        // Conta quanti toggle sono attivi
-        int count = 0;
-        string attiva = "";
+        bool altriAttivi =
+            toggleAorta.isOn ||
+            togglePulmonaryArtery.isOn ||
+            toggleVenaCava.isOn;
 
-        if (toggleRightAtrium.isOn) { count++; attiva = "Right Atrium"; }
-        if (toggleRightVentricle.isOn) { count++; attiva = "Right Ventricle"; }
-        if (toggleLeftAtrium.isOn) { count++; attiva = "Left Atrium"; }
-        if (toggleLeftVentricle.isOn) { count++; attiva = "Left Ventricle"; }
-
-        if (count == 1)
+        // Mostra volume SOLO se una camera è attiva e gli altri sono tutti disattivati
+        if (cameraCount == 1 && !altriAttivi)
         {
             volumePanel.SetActive(true);
-            volumeLabel.text = $"Volume: {GetVolume(attiva)} ml";
+            volumeLabel.text = $"Volume: {GetVolume(selected)} ml";
         }
         else
         {
             volumePanel.SetActive(false);
         }
     }
+
+
 
     int GetVolume(string parte)
     {
