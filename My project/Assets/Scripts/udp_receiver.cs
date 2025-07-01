@@ -62,13 +62,13 @@ public class UDPReceiver : MonoBehaviour
                 case "translate_down":
                     TranslateModel(Vector3.down); break;
 
-                case "rotate_right":
-                    RotateModel(1); break;
                 case "rotate_left":
+                    RotateModel(1); break;
+                case "rotate_right":
                     RotateModel(-1); break;
-                case "rotate_up":
-                    RotateModelUpDown(-1); break;
                 case "rotate_down":
+                    RotateModelUpDown(-1); break;
+                case "rotate_up":
                     RotateModelUpDown(1); break;
 
                 case "stop":

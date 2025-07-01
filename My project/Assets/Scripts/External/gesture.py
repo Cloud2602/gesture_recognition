@@ -70,10 +70,12 @@ def track_movement(mode, results, frame, prev_pos, tracked_hand, hand_count):
             if mode == "zoom" and hand_count == 1:
                 send_command("mode_zoom")
                 dist = ((thumb_pos[0] - index_pos[0])**2 + (thumb_pos[1] - index_pos[1])**2) ** 0.5
-                if dist < 40:
+                # Soglie personalizzabili
+                if dist < 60:
                     send_command("zoom_in")
                 elif dist > 100:
                     send_command("zoom_out")
+
 
             elif mode == "traslazione":
                 send_command("mode_translate")
