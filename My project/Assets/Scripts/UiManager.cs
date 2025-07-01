@@ -25,12 +25,14 @@ public class UIManager : MonoBehaviour
 
     public void OnDueManiRilevate()
     {
+        Debug.Log("Due mani rilevate, cambio modalità a 'choose_mode'");
         modalitaCorrente = "choose_mode";
         AggiornaUI();
     }
 
     public void OnModalitaSelezionata(string nuovaModalita)
     {
+        Debug.Log($"Modalità selezionata: {nuovaModalita}");
         switch (nuovaModalita)
         {
             case "mode_zoom":

@@ -78,16 +78,19 @@ public class UDPReceiver : MonoBehaviour
                 case "default":
                     ResetToInitialPosition(); break;
             }
-
-             // GESTIONE UI
+            Debug.Log("Gestione UI per: " + lastReceivedData);
+            // GESTIONE UI
             switch (lastReceivedData)
+            
             {
+
                 case "start":
                 case "default":
                     if (uiManager != null) uiManager.OnStartPremuto();
                     break;
 
                 case "choose_mode":
+                    Debug.Log("Modalità scelta: " + lastReceivedData);
                     if (uiManager != null) uiManager.OnDueManiRilevate();
                     break;
 
