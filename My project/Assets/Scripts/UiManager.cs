@@ -1,55 +1,127 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    [Header("UI Elements")]
     public TextMeshProUGUI modalitaText;
-    public TextMeshProUGUI suggerimentiText;
+    public GameObject suggerimentiPanel;           // Vertical Layout Group
+    public GameObject legendaItemPrefab;           // Prefab con Icon + Label
 
-    private bool startPremuto = false;
-    private bool inSceltaModalita = false;
-    private string modalitaCorrente = "Nessuna";
+    [Header("Sprites per le modalità")]
+    public Sprite zoomSprite;
+    public Sprite rotateSprite;
+    public Sprite translateSprite;
+    public Sprite handsOpenSprite;
+
+    private string modalitaCorrente = "idle";
 
     public void OnStartPremuto()
     {
-        startPremuto = true;
-        modalitaCorrente = "In attesa...";
-        inSceltaModalita = true;
+        modalitaCorrente = "waiting";
         AggiornaUI();
     }
 
     public void OnDueManiRilevate()
     {
-        inSceltaModalita = true;
+        modalitaCorrente = "choose_mode";
         AggiornaUI();
     }
 
     public void OnModalitaSelezionata(string nuovaModalita)
     {
-        modalitaCorrente = nuovaModalita;
-        inSceltaModalita = false;
+        switch (nuovaModalita)
+        {
+            case "mode_zoom":
+                modalitaCorrente = "zoom";
+                break;
+            case "mode_rotate":
+                modalitaCorrente = "rotate";
+                break;
+            case "mode_translate":
+                modalitaCorrente = "translate";
+                break;
+            case "default":
+                modalitaCorrente = "waiting";
+                break;
+            default:
+                modalitaCorrente = "idle";
+                break;
+        }
+
         AggiornaUI();
     }
 
-    void AggiornaUI()
+    private void AggiornaUI()
     {
-        modalitaText.text = $"Sei in modalità: {modalitaCorrente}";
+        // Cancella contenuto precedente
+        foreach (Transform child in suggerimentiPanel.transform)
+            Destroy(child.gameObject);
 
-        if (!startPremuto)
+        // Visualizza modalità attuale
+        switch (modalitaCorrente)
         {
-            suggerimentiText.text = "";
+            case "idle":
+                modalitaText.text = "";
+                suggerimentiPanel.SetActive(false);
+                break;
+
+            case "waiting":
+                modalitaText.text = "Mode: Waiting...";
+                suggerimentiPanel.SetActive(true);
+                CreaMessaggioConIcona("Show two hands for choice mode", handsOpenSprite);
+                break;
+
+            case "choose_mode":
+                modalitaText.text = "Mode: Choice Mode";
+                suggerimentiPanel.SetActive(true);
+                CreaLegenda("Zoom", zoomSprite);
+                CreaLegenda("Rotation", rotateSprite);
+                CreaLegenda("Translation", translateSprite);
+                break;
+
+            case "zoom":
+                modalitaText.text = "Mode: Zoom";
+                suggerimentiPanel.SetActive(true);
+                CreaMessaggioConIcona("Show two hands for choice mode", handsOpenSprite);
+                break;
+
+            case "rotate":
+                modalitaText.text = "Mode: Rotation";
+                suggerimentiPanel.SetActive(true);
+                CreaMessaggioConIcona("Show two hands for choice mode", handsOpenSprite);
+                break;
+
+            case "translate":
+                modalitaText.text = "Mode: Translation";
+                suggerimentiPanel.SetActive(true);
+                CreaMessaggioConIcona("Show two hands for choice mode", handsOpenSprite);
+                break;
         }
-        else if (inSceltaModalita && modalitaCorrente == "In attesa...")
-        {
-            suggerimentiText.text = "👐 Mostra due mani per scegliere la modalità";
-        }
-        else if (inSceltaModalita)
-        {
-            suggerimentiText.text = "Scegli la modalità:\n👉 Zoom\n✌️ Rotazione\n🤟 Traslazione";
-        }
-        else
-        {
-            suggerimentiText.text = "";
-        }
+    }
+
+    private void CreaLegenda(string label, Sprite icon)
+    {
+        GameObject item = Instantiate(legendaItemPrefab, suggerimentiPanel.transform);
+
+        var iconImage = item.transform.Find("Icon").GetComponent<Image>();
+        var labelText = item.transform.Find("Label").GetComponent<TextMeshProUGUI>();
+
+        if (iconImage != null) iconImage.sprite = icon;
+        if (labelText != null) labelText.text = label;
+    }
+
+    
+
+    private void CreaMessaggioConIcona(string msg, Sprite icon)
+    {
+        GameObject item = Instantiate(legendaItemPrefab, suggerimentiPanel.transform);
+
+        var iconImage = item.transform.Find("Icon").GetComponent<Image>();
+        var labelText = item.transform.Find("Label").GetComponent<TextMeshProUGUI>();
+
+        if (iconImage != null) iconImage.sprite = icon;
+        if (labelText != null) labelText.text = msg;
     }
 }

@@ -78,6 +78,26 @@ public class UDPReceiver : MonoBehaviour
                     ResetToInitialPosition(); break;
             }
 
+             // GESTIONE UI
+            switch (lastReceivedData)
+            {
+                case "start":
+                case "default":
+                    if (uiManager != null) uiManager.OnStartPremuto();
+                    break;
+
+                case "choose_mode":
+                    if (uiManager != null) uiManager.OnDueManiRilevate();
+                    break;
+
+                case "mode_zoom":
+                case "mode_rotate":
+                case "mode_translate":
+                    if (uiManager != null) uiManager.OnModalitaSelezionata(lastReceivedData);
+                    break;
+            }
+
+
             lastReceivedData = "";
         }
     }

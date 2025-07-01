@@ -180,11 +180,12 @@ while True:
                 previous_mode = None
                 prev_pos = None
                 print("Modalità attesa")
+                send_command("choose_mode")
         if flag == 1:
                 if mode != None:
                     flag = 2
                     print("Modalità scelta : ", mode)
-                    send_command("choose_mode")
+                    
                     previous_mode= mode
                     mode = None
         if flag == 2:
