@@ -11,8 +11,13 @@ public class UDPReceiver : MonoBehaviour
     public int port = 5065;
     string lastReceivedData = "";
 
+    private Vector3 initialPosition;  // 🔸 Posizione iniziale salvata
+
     void Start()
     {
+        // 🔹 Memorizza la posizione iniziale all'avvio
+        initialPosition = transform.position;
+
         receiveThread = new Thread(new ThreadStart(ReceiveData));
         receiveThread.IsBackground = true;
         receiveThread.Start();
@@ -68,6 +73,9 @@ public class UDPReceiver : MonoBehaviour
 
                 case "stop":
                     StopMovement(); break;
+
+                case "default":
+                    ResetToInitialPosition(); break;
             }
 
             lastReceivedData = "";
@@ -77,47 +85,50 @@ public class UDPReceiver : MonoBehaviour
     void ZoomModel(int direction)
     {
         Debug.Log("Zoom " + (direction > 0 ? "In" : "Out"));
-        // Muove in avanti (Z negativo) o indietro (Z positivo) di 20 unità
         transform.position += Vector3.forward * 0.2f * direction;
     }
 
     void TranslateModel(Vector3 dir)
     {
         Debug.Log("Translate " + dir);
-        transform.position += dir * 0.2f; // 0.2f = ~20 pixel world space (dipende dalla scala)
+        transform.position += dir * 0.2f;
     }
 
     void RotateModel(int direction)
-{
-    Debug.Log("Rotate Y (Local) " + (direction > 0 ? "Right" : "Left"));
-    transform.Rotate(Vector3.up, 5f * direction, Space.Self); // RUOTA SU SE STESSO
-}
+    {
+        Debug.Log("Rotate Y (Local) " + (direction > 0 ? "Right" : "Left"));
+        transform.Rotate(Vector3.up, 5f * direction, Space.Self);
+    }
 
-void RotateModelUpDown(int direction)
-{
-    Debug.Log("Rotate X (Local) " + (direction > 0 ? "Down" : "Up"));
-    transform.Rotate(Vector3.right, 5f * direction, Space.Self); // RUOTA SU SE STESSO
-}
-
+    void RotateModelUpDown(int direction)
+    {
+        Debug.Log("Rotate X (Local) " + (direction > 0 ? "Down" : "Up"));
+        transform.Rotate(Vector3.right, 5f * direction, Space.Self);
+    }
 
     void StopMovement()
     {
         Debug.Log("Stop movement");
-        // Placeholder per logica futura
+        // Placeholder
+    }
+
+    // 🔸 Funzione per tornare alla posizione iniziale
+    void ResetToInitialPosition()
+    {
+        Debug.Log("Reset alla posizione iniziale");
+        transform.position = initialPosition;
+        transform.rotation = Quaternion.identity;  // opzionale: resetta anche rotazione
     }
 
     void OnApplicationQuit()
     {
-        // Chiude il receiver UDP
         if (receiveThread != null) receiveThread.Abort();
         if (client != null) client.Close();
 
-        // Invia messaggio di stop al Python (opzionale)
         using (UdpClient quitSender = new UdpClient())
         {
             byte[] quitMsg = Encoding.UTF8.GetBytes("quit");
             quitSender.Send(quitMsg, quitMsg.Length, "127.0.0.1", 5065);
         }
     }
-
 }
