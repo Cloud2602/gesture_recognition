@@ -6,7 +6,7 @@ public class MenuController : MonoBehaviour
     public CameraZoom cameraZoom;
     public GameObject uiGroupToHide;
     public GameObject heart;
-    public GameObject InstructionPanel; 
+    public GameObject GesturePanel; 
     public GameObject HeartPartsPanel;
 
     private bool hasStarted = false;
@@ -14,8 +14,8 @@ public class MenuController : MonoBehaviour
     private void Start()
     {
         // Nascondi instruction panel all'avvio
-        if (InstructionPanel != null)
-            InstructionPanel.SetActive(false);
+        if (GesturePanel != null)
+            GesturePanel.SetActive(false);
 
         if (HeartPartsPanel != null)
             HeartPartsPanel.SetActive(false);
@@ -87,8 +87,8 @@ public class MenuController : MonoBehaviour
         }
 
         // 5. Mostra instruction panel
-        if (InstructionPanel != null)
-            InstructionPanel.SetActive(true);
+        if (GesturePanel != null)
+            GesturePanel.SetActive(true);
 
         if (HeartPartsPanel != null)
             HeartPartsPanel.SetActive(true);
