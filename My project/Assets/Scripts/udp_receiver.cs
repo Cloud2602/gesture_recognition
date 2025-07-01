@@ -13,12 +13,13 @@ public class UDPReceiver : MonoBehaviour
     public UIManager uiManager;
 
     private Vector3 initialPosition;  
+    private Quaternion initialRotation;
 
     void Start()
     {
         //  Memorizza la posizione iniziale all'avvio
         initialPosition = transform.position;
-
+        initialRotation = transform.rotation;
         receiveThread = new Thread(new ThreadStart(ReceiveData));
         receiveThread.IsBackground = true;
         receiveThread.Start();
@@ -120,14 +121,14 @@ public class UDPReceiver : MonoBehaviour
 
     void RotateModel(int direction)
     {
-        Debug.Log("Rotate Y (Local) " + (direction > 0 ? "Right" : "Left"));
-        transform.Rotate(Vector3.up, 5f * direction, Space.Self);
+        Vector3 initialUp = initialRotation * Vector3.up;  // Asse Y iniziale
+        transform.Rotate(initialUp, 5f * direction, Space.World);
     }
 
     void RotateModelUpDown(int direction)
     {
-        Debug.Log("Rotate X (Local) " + (direction > 0 ? "Down" : "Up"));
-        transform.Rotate(Vector3.right, 5f * direction, Space.Self);
+        Vector3 initialRight = initialRotation * Vector3.right;  // Asse X iniziale
+        transform.Rotate(initialRight, 5f * direction, Space.World);
     }
 
     void StopMovement()
