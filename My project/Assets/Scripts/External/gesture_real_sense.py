@@ -23,15 +23,15 @@ confidence_threshold = 0.6
 radius = 40  # per smoothing profondità
 depth_scale = 0.0001  # solitamente 1mm
 
+model = load_model(model_path)
+print(" Modello caricato!")
 label_map = {
     0: "stop",
     1: "zoom",
-    2: "rotazione",
-    3: "traslazione"
+    2: "rotation",
+    3: "traslation"
 }
 
-model = load_model(model_path)
-print("✅ Modello caricato!")
 
 # === MediaPipe Setup ===
 mp_hands = mp.solutions.hands
@@ -42,15 +42,14 @@ mp_drawing = mp.solutions.drawing_utils
 # === RealSense Setup ===
 pipeline = rs.pipeline()
 config = rs.config()
-config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 60)
-config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 60)
+config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 profile = pipeline.start(config)
-
 align = rs.align(rs.stream.color)
 
 depth_sensor = profile.get_device().first_depth_sensor()
 depth_scale = depth_sensor.get_depth_scale()
-print("📏 Scala profondità:", depth_scale)
+print(" Scala profondità:", depth_scale)
 
 # === Stato ===
 last_prediction = None
@@ -106,9 +105,9 @@ def predict_gesture(frame, results, right_hand, left_hand, last_prediction, stab
     confidence = float(np.max(prediction))
 
     if confidence >= confidence_threshold:
-            current_label = label_map.get(predicted_index, "altro")
+            current_label = label_map.get(predicted_index, "other")
     else:
-        current_label = "altro"
+        current_label = "other"
 
     
    # === STABILIZZAZIONE ===
@@ -133,7 +132,7 @@ def track_movement(mode, results, frame, prev_pos, tracked_hand, hand_count):
         label = "Left" if label == "Right" else "Right"
 
         if label != tracked_hand:
-            continue  # ❌ ignora le mani che non sono quella tracciata
+            continue  
         thumb = hand_landmarks.landmark[4]
         index = hand_landmarks.landmark[8]
         h, w, _ = frame.shape
@@ -141,7 +140,7 @@ def track_movement(mode, results, frame, prev_pos, tracked_hand, hand_count):
         thumb_pos = (int(thumb.x * w), int(thumb.y * h))
         index_pos = (int(index.x * w), int(index.y * h))
         center_pos = (int((thumb.x + index.x)/2 * w), int((thumb.y + index.y)/2 * h))
-        t = 3
+        t = 10
 
         if mode == "zoom" and hand_count == 1:
             send_command("mode_zoom")
@@ -151,7 +150,7 @@ def track_movement(mode, results, frame, prev_pos, tracked_hand, hand_count):
             elif dist > 100:
                 send_command("zoom_out")
 
-        elif mode == "traslazione":
+        elif mode == "traslation" and hand_count == 1:
             send_command("mode_translate")
             if prev_pos is not None:
                 dx = center_pos[0] - prev_pos[0]
@@ -162,7 +161,7 @@ def track_movement(mode, results, frame, prev_pos, tracked_hand, hand_count):
                     send_command("translate_down" if dy > t else "translate_up")
             prev_pos = center_pos
 
-        elif mode == "rotazione":
+        elif mode == "rotation"and hand_count == 1:
             send_command("mode_rotate")
             if prev_pos is not None:
                 dx = center_pos[0] - prev_pos[0]
@@ -190,6 +189,7 @@ try:
             depth_image = np.asanyarray(depth_frame.get_data())
 
             frame = cv2.flip(color_image, 1)
+        
             image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             results = hands.process(image_rgb)
 
@@ -203,13 +203,13 @@ try:
                     frame, results, right_hand, left_hand,
                     last_prediction, stable_count, depth_image, h, w
                 )
-                print(f"Modalità corrente: {mode},Conteggio stabile: {stable_count}")
+                #print(f"Modalità corrente: {mode},Conteggio stabile: {stable_count}")
 
                 if mode == "stop" :
                     if flag == 0 or flag ==2:
                         flag = 1
                         mode = None
-                        previous_mode = None
+                        previous_mode = "Choice"
                         prev_pos = None
                         print(" Modalità attesa")
                         send_command("choose_mode")
@@ -225,15 +225,19 @@ try:
                     if previous_mode != None:
                         if previous_mode == "stop":
                             print("Modalità stop attiva")
-                            send_command("stop")
+                            send_command("default")
                         else:
                             print("Modalità attiva : ", previous_mode)
                             prev_pos = track_movement(previous_mode, results, frame, prev_pos, tracked_hand, hand_count)
             else:
-                display_label = "🖐️ Nessuna mano"
+                display_label = " Nessuna mano"
 
-            cv2.putText(frame, f"Modalità: {previous_mode}", (10, 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 2)
+            cv2.putText(frame, f"Mode': {previous_mode}", (10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+
+            cv2.putText(frame, f"Stable count: {stable_count}", (10, 60),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
+
             cv2.imshow("RealSense Hand Tracking", frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -248,4 +252,4 @@ try:
 finally:
     pipeline.stop()
     cv2.destroyAllWindows()
-    print("⛔ Pipeline chiusa")
+    print(" Pipeline chiusa")

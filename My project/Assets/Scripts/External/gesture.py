@@ -136,7 +136,8 @@ def predict_gesture(frame, right_hand, left_hand, last_prediction,stable_count, 
         prediction = model.predict(input_data, verbose=0)
         predicted_index = int(np.argmax(prediction))
         confidence = float(np.max(prediction))
-        #print(f"Predizione grezza: {prediction}, Indice: {predicted_index}, Confidenza: {confidence:.2f}")
+        print(f"Confidence: {confidence:.3f}")
+       
 
         if confidence >= confidence_threshold:
             current_label = label_map.get(predicted_index, "altro")

@@ -35,36 +35,55 @@ public class MenuController : MonoBehaviour
     }
 
     private void StartPythonScript()
+{
+    string pythonExePath = "C:/Users/franc/anaconda3/envs/Soluzione_ddd/python.exe"; 
+    string scriptPath = Application.dataPath + "/Scripts/External/gesture_real_sense.py"; 
+
+    UnityEngine.Debug.Log($"🟢 [StartPythonScript] Interprete Python: {pythonExePath}");
+    UnityEngine.Debug.Log($"🟢 [StartPythonScript] Script Python: {scriptPath}");
+
+    ProcessStartInfo start = new ProcessStartInfo();
+    start.FileName = pythonExePath;
+    start.Arguments = "\"" + scriptPath + "\"";
+    start.UseShellExecute = false;
+    start.RedirectStandardOutput = true;
+    start.RedirectStandardError = true;
+    start.CreateNoWindow = true;
+
+    Process process = new Process();
+    process.StartInfo = start;
+
+    process.OutputDataReceived += (sender, args) =>
     {
-        string pythonExePath = "C:/Users/franc/anaconda3/envs/technologies_dm/python.exe"; // oppure "python3" o il path completo, es: "C:/Python39/python.exe"
-        string scriptPath = Application.dataPath + "/Scripts/External/gesture.py"; // cambia il path se serve
+        if (!string.IsNullOrEmpty(args.Data))
+            UnityEngine.Debug.Log("📤 PYTHON OUTPUT: " + args.Data);
+    };
 
-        ProcessStartInfo start = new ProcessStartInfo();
-        start.FileName = pythonExePath;
-        start.Arguments = "\"" + scriptPath + "\"";
-        start.UseShellExecute = false;
-        start.RedirectStandardOutput = true;
-        start.RedirectStandardError = true;
-        start.CreateNoWindow = true;
+    process.ErrorDataReceived += (sender, args) =>
+    {
+        if (!string.IsNullOrEmpty(args.Data))
+            UnityEngine.Debug.LogError("❌ PYTHON ERROR: " + args.Data);
+    };
 
-        Process process = new Process();
-        process.StartInfo = start;
+    pythonProcess = new Process(); 
+    pythonProcess.StartInfo = start;
 
-        process.OutputDataReceived += (sender, args) => UnityEngine.Debug.Log("PYTHON: " + args.Data);
-        process.ErrorDataReceived += (sender, args) => UnityEngine.Debug.LogError("PYTHON ERROR: " + args.Data);
-        pythonProcess = new Process(); 
-        pythonProcess.StartInfo = start;
-        try
-        {
-            pythonProcess.Start();
-            pythonProcess.BeginOutputReadLine();
-            pythonProcess.BeginErrorReadLine();
-        }
-        catch (System.Exception e)
-        {
-            UnityEngine.Debug.LogError("Errore avvio Python: " + e.Message);
-        }
+    try
+    {
+        UnityEngine.Debug.Log("🚀 Avvio dello script Python...");
+
+        pythonProcess.Start();
+        pythonProcess.BeginOutputReadLine();
+        pythonProcess.BeginErrorReadLine();
+
+        UnityEngine.Debug.Log("✅ Python script avviato con successo.");
     }
+    catch (System.Exception e)
+    {
+        UnityEngine.Debug.LogError("❗ Errore avvio Python: " + e.Message);
+    }
+}
+
 
     private IEnumerator StartSequence()
     {

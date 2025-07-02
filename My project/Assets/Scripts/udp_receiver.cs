@@ -46,8 +46,14 @@ public class UDPReceiver : MonoBehaviour
 
     void Update()
     {
+        
         if (!string.IsNullOrEmpty(lastReceivedData))
         {
+            if (lastReceivedData.StartsWith("[ERRORE MODELLO]"))
+            {
+                Debug.LogError(lastReceivedData);
+                return;
+            }
             switch (lastReceivedData)
             {
                 case "zoom_in":
@@ -75,9 +81,10 @@ public class UDPReceiver : MonoBehaviour
 
                 case "stop":
                     StopMovement(); break;
-
+                
                 case "default":
                     ResetToInitialPosition(); break;
+                
             }
             Debug.Log("Gestione UI per: " + lastReceivedData);
             // GESTIONE UI

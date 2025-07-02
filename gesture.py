@@ -16,9 +16,9 @@ def send_command(command):
     print(f"[Python] Inviato comando: {command}")
 
 # === CONFIGURAZIONE ===
-model_path = './with_mediapipe_z/best_model.h5'
-mean = np.load('./with_mediapipe_z/scaler_mean.npy')
-scale = np.load('./with_mediapipe_z/scaler_scale.npy')
+model_path = '../with_mediapipe_z/best_model.h5'
+mean = np.load('../with_mediapipe_z/scaler_mean.npy')
+scale = np.load('../with_mediapipe_z/scaler_scale.npy')
 
 confidence_threshold = 0.9  # sotto questa soglia → "altro"
 
@@ -33,7 +33,7 @@ label_map = {
 
 # === CARICA MODELLO ===
 model = load_model(model_path)
-print("✅ Modello caricato!")
+print(" Modello caricato!")
 
 # === SETUP MEDIAPIPE ===
 mp_hands = mp.solutions.hands
@@ -49,10 +49,15 @@ last_prediction = None
 stable_count = 0
 display_label = "..."
 
-def track_movement(mode, results, frame, prev_pos):
+def track_movement(mode, results, frame, prev_pos, tracked_hand, hand_count):
     # === GESTIONE MOVIMENTO IN BASE ALLA MODALITÀ STABILE ===
     
-        for hand_landmarks in results.multi_hand_landmarks:
+        for hand_landmarks, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
+            label = handedness.classification[0].label
+            label = "Left" if label == "Right" else "Right"
+
+            if label != tracked_hand:
+                continue  # ❌ ignora le mani che non sono quella tracciata
             thumb = hand_landmarks.landmark[4]
             index = hand_landmarks.landmark[8]
 
@@ -60,15 +65,17 @@ def track_movement(mode, results, frame, prev_pos):
             thumb_pos = (int(thumb.x * w), int(thumb.y * h))
             index_pos = (int(index.x * w), int(index.y * h))
             center_pos = (int((thumb.x + index.x)/2 * w), int((thumb.y + index.y)/2 * h))
-            t = 3  # soglia movimento
+            t = 20  # soglia movimento
 
-            if mode == "zoom":
+            if mode == "zoom" and hand_count == 1:
                 send_command("mode_zoom")
                 dist = ((thumb_pos[0] - index_pos[0])**2 + (thumb_pos[1] - index_pos[1])**2) ** 0.5
-                if dist < 40:
+                # Soglie personalizzabili
+                if dist < 60:
                     send_command("zoom_in")
                 elif dist > 100:
                     send_command("zoom_out")
+
 
             elif mode == "traslazione":
                 send_command("mode_translate")
@@ -108,6 +115,7 @@ def track_movement(mode, results, frame, prev_pos):
         return prev_pos
 def predict_gesture(frame, right_hand, left_hand, last_prediction,stable_count, display_label= None):
         stable_threshold = 20  # numero minimo di frame consecutivi per mostrare la predizione
+        dominant_hand_label = None
         for hand_landmarks, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
             mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
             
@@ -120,7 +128,7 @@ def predict_gesture(frame, right_hand, left_hand, last_prediction,stable_count, 
                 right_hand = landmarks
             elif label == "Left":
                 left_hand = landmarks
-
+            dominant_hand_label = label
         # === COMBINA, STANDARDIZZA, PREDICI ===
         combined = right_hand + left_hand
         input_data = np.array([combined])
@@ -128,7 +136,8 @@ def predict_gesture(frame, right_hand, left_hand, last_prediction,stable_count, 
         prediction = model.predict(input_data, verbose=0)
         predicted_index = int(np.argmax(prediction))
         confidence = float(np.max(prediction))
-        #print(f"Predizione grezza: {prediction}, Indice: {predicted_index}, Confidenza: {confidence:.2f}")
+        print(f"Confidence: {confidence:.3f}")
+       
 
         if confidence >= confidence_threshold:
             current_label = label_map.get(predicted_index, "altro")
@@ -152,12 +161,14 @@ def predict_gesture(frame, right_hand, left_hand, last_prediction,stable_count, 
             display_label = current_label
             #print(f"Predizione stabile: {display_label}")
             stable_count = 0    
-        return display_label, last_prediction, stable_count
+        return display_label, last_prediction, stable_count, dominant_hand_label 
+
 mode = None
 previous_mode = None
 flag = 0  
 prev_pos = None  # posizione centrale mano precedente
 while True:
+    
     ret, frame = cap.read()
     if not ret:
         break
@@ -170,7 +181,8 @@ while True:
     right_hand = [0.0] * (21 * 3)
     left_hand = [0.0] * (21 * 3)
     if results.multi_hand_landmarks and results.multi_handedness:
-        mode, last_prediction, stable_count = predict_gesture(frame, right_hand, left_hand, last_prediction, stable_count)
+        hand_count = len(results.multi_hand_landmarks) if results.multi_hand_landmarks else 0
+        mode, last_prediction, stable_count, dominant_hand_label = predict_gesture(frame, right_hand, left_hand, last_prediction, stable_count)
         print(f"Modalità corrente: {mode},Conteggio stabile: {stable_count}")
         "flag [0,1,2] 0=attesa, 1=modalità scelta, 2=modalità attiva"
         if mode == "stop" :
@@ -187,6 +199,7 @@ while True:
                     print("Modalità scelta : ", mode)
                     
                     previous_mode= mode
+                    tracked_hand = dominant_hand_label
                     mode = None
         if flag == 2:
             if previous_mode != None:
@@ -195,10 +208,10 @@ while True:
                     send_command("default")
                 else:
                     print("Modalità attiva : ", previous_mode)
-                    prev_pos = track_movement(previous_mode, results, frame, prev_pos)
+                    prev_pos = track_movement(previous_mode, results, frame, prev_pos, tracked_hand, hand_count)
 
     else:
-        display_label = "🖐️ Nessuna mano"
+        display_label = " Nessuna mano"
 
     cv2.putText(frame, f"Modalita: {previous_mode}", (10, 70),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
@@ -210,3 +223,4 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
+sock.close()
