@@ -39,6 +39,7 @@ public class MenuController : MonoBehaviour
             HeartPartsPanel.SetActive(false);
 
         cameraZoom.StartZoomOut();
+        OnApplicationQuit() ;
     }
 
     public void OnStartPressed()
@@ -56,7 +57,7 @@ public class MenuController : MonoBehaviour
 
     private void StartPythonScript()
     {
-        string pythonExePath = "C:/Users/franc/anaconda3/envs/technologies_dm/python.exe"; // oppure "python3" o il path completo, es: "C:/Python39/python.exe"
+        string pythonExePath = "C:/Users/franc/anaconda3/envs/Soluzione_ddd/python.exe"; // oppure "python3" o il path completo, es: "C:/Python39/python.exe"
         string scriptPath = Application.dataPath + "/Scripts/External/gesture.py"; // cambia il path se serve
 
         ProcessStartInfo start = new ProcessStartInfo();
