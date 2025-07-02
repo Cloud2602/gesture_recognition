@@ -13,12 +13,32 @@ public class MenuController : MonoBehaviour
     private Process pythonProcess; 
     private void Start()
     {
+
+        if (cameraZoom != null)
+        cameraZoom.OnZoomOutComplete += HandleZoomOutComplete;
+
         // Nascondi instruction panel all'avvio
         if (GesturePanel != null)
             GesturePanel.SetActive(false);
 
         if (HeartPartsPanel != null)
             HeartPartsPanel.SetActive(false);
+    }
+
+    public void onHomePressed()
+    {
+        // Mostra menu iniziale
+        if (uiGroupToHide != null)
+            uiGroupToHide.SetActive(true);
+
+        // Nascondi gesture e parti cuore
+        if (GesturePanel != null)
+            GesturePanel.SetActive(false);
+
+        if (HeartPartsPanel != null)
+            HeartPartsPanel.SetActive(false);
+
+        cameraZoom.StartZoomOut();
     }
 
     public void OnStartPressed()
@@ -35,60 +55,41 @@ public class MenuController : MonoBehaviour
     }
 
     private void StartPythonScript()
-{
-    string pythonExePath = "C:/Users/franc/anaconda3/envs/Soluzione_ddd/python.exe"; 
-    string scriptPath = Application.dataPath + "/Scripts/External/gesture_real_sense.py"; 
-
-    UnityEngine.Debug.Log($"🟢 [StartPythonScript] Interprete Python: {pythonExePath}");
-    UnityEngine.Debug.Log($"🟢 [StartPythonScript] Script Python: {scriptPath}");
-
-    ProcessStartInfo start = new ProcessStartInfo();
-    start.FileName = pythonExePath;
-    start.Arguments = "\"" + scriptPath + "\"";
-    start.UseShellExecute = false;
-    start.RedirectStandardOutput = true;
-    start.RedirectStandardError = true;
-    start.CreateNoWindow = true;
-
-    Process process = new Process();
-    process.StartInfo = start;
-
-    process.OutputDataReceived += (sender, args) =>
     {
-        if (!string.IsNullOrEmpty(args.Data))
-            UnityEngine.Debug.Log("📤 PYTHON OUTPUT: " + args.Data);
-    };
+        string pythonExePath = "C:/Users/franc/anaconda3/envs/technologies_dm/python.exe"; // oppure "python3" o il path completo, es: "C:/Python39/python.exe"
+        string scriptPath = Application.dataPath + "/Scripts/External/gesture.py"; // cambia il path se serve
 
-    process.ErrorDataReceived += (sender, args) =>
-    {
-        if (!string.IsNullOrEmpty(args.Data))
-            UnityEngine.Debug.LogError("❌ PYTHON ERROR: " + args.Data);
-    };
+        ProcessStartInfo start = new ProcessStartInfo();
+        start.FileName = pythonExePath;
+        start.Arguments = "\"" + scriptPath + "\"";
+        start.UseShellExecute = false;
+        start.RedirectStandardOutput = true;
+        start.RedirectStandardError = true;
+        start.CreateNoWindow = true;
 
-    pythonProcess = new Process(); 
-    pythonProcess.StartInfo = start;
+        Process process = new Process();
+        process.StartInfo = start;
 
-    try
-    {
-        UnityEngine.Debug.Log("🚀 Avvio dello script Python...");
-
-        pythonProcess.Start();
-        pythonProcess.BeginOutputReadLine();
-        pythonProcess.BeginErrorReadLine();
-
-        UnityEngine.Debug.Log("✅ Python script avviato con successo.");
+        process.OutputDataReceived += (sender, args) => UnityEngine.Debug.Log("PYTHON: " + args.Data);
+        process.ErrorDataReceived += (sender, args) => UnityEngine.Debug.LogError("PYTHON ERROR: " + args.Data);
+        pythonProcess = new Process(); 
+        pythonProcess.StartInfo = start;
+        try
+        {
+            pythonProcess.Start();
+            pythonProcess.BeginOutputReadLine();
+            pythonProcess.BeginErrorReadLine();
+        }
+        catch (System.Exception e)
+        {
+            UnityEngine.Debug.LogError("Errore avvio Python: " + e.Message);
+        }
     }
-    catch (System.Exception e)
-    {
-        UnityEngine.Debug.LogError("❗ Errore avvio Python: " + e.Message);
-    }
-}
-
 
     private IEnumerator StartSequence()
     {
         // 1. Avvia zoom
-        cameraZoom.StartZoom();
+        cameraZoom.StartZoomIn();
 
         // 2. Attendi che lo zoom finisca
         yield return new WaitForSeconds(1.5f); 
@@ -138,5 +139,24 @@ public class MenuController : MonoBehaviour
                 UnityEngine.Debug.LogWarning("Errore durante la chiusura del processo Python: " + e.Message);
             }
         }
+    }
+
+    public void HandleZoomOutComplete()
+    {
+        // Questa funzione viene chiamata appena finito lo zoom out
+
+        
+
+    
+
+        // Se vuoi riattiva rotazione cuore o altre azioni
+        if (heart != null)
+        {
+            var rot = heart.GetComponent<HeartRotator>();
+            if (rot != null)
+                rot.enabled = true;
+        }
+
+        hasStarted = false;
     }
 }

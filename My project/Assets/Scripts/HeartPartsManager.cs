@@ -28,6 +28,16 @@ public class HeartPartsManager : MonoBehaviour
 
     public void OnStartPressed()
 {
+
+
+    toggleAorta.isOn = true;
+    toggleLeftAtrium.isOn = true;
+    toggleLeftVentricle.isOn = true;
+    togglePulmonaryArtery.isOn = true;
+    toggleRightAtrium.isOn = true;
+    toggleRightVentricle.isOn = true;
+    toggleVenaCava.isOn = true;
+    
     // Altri toggle → visibilità
     toggleAorta.onValueChanged.AddListener((val) => aorta.SetActive(val));
     toggleLeftAtrium.onValueChanged.AddListener((val) => leftAtrium.SetActive(val));

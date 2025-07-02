@@ -2,53 +2,78 @@ using UnityEngine;
 
 public class CameraZoom : MonoBehaviour
 {
+    public System.Action OnZoomOutComplete;
     public Transform zoomTarget;       // Oggetto verso cui zoommare (es. il cuore o sfera)
     public float zoomSpeed = 1.5f;     // Velocità dello zoom
     public float targetFOV = 30f;      // Field of View finale della camera
     public CanvasGroup uiGroup;        // Riferimento al CanvasGroup per il fade UI
 
     private Camera cam;
-    private bool zooming = false;
+    private bool zoomingIn = false;
+    private bool zoomingOut =false;
+
+    private Vector3 startPosition;
+    private float startFOV;
+
 
     void Start()
     {
         cam = Camera.main;
+        startPosition = cam.transform.position;
+        startFOV = cam.fieldOfView;
     }
 
-    public void StartZoom()
+    public void StartZoomIn()
     {
-        zooming = true;
+        zoomingIn = true;
+        zoomingOut = false;
     }
 
-   void Update()
-{
-    if (zooming)
+    public void StartZoomOut()
     {
-        // Posizione target finale a z = 2, mantenendo x e y attuali
-        Vector3 targetPos = new Vector3(transform.position.x, transform.position.y, 2f);
+        zoomingOut = true;
+        zoomingIn = false;
+    }
 
-        // Muovi gradualmente la camera verso z = 2
-        cam.transform.position = Vector3.Lerp(cam.transform.position, targetPos, Time.deltaTime * zoomSpeed);
-        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, targetFOV, Time.deltaTime * zoomSpeed);
-
-        // Calcola il valore normalizzato tra -7.5 e 2 per fading
-        float t = Mathf.InverseLerp(-7.5f, 2f, cam.transform.position.z); // da -7.5 → 2 = 0 → 1
-
-        // Fade-out della UI
-        if (uiGroup != null)
-            uiGroup.alpha = 1f - t;
-
-        // Ferma lo zoom appena ci avviciniamo a z = 2
-        if (cam.transform.position.z >= 1.95f)
+    void Update()
+    {
+        if (zoomingIn)
         {
-            cam.transform.position = targetPos;
-            cam.fieldOfView = targetFOV;
-            zooming = false;
+            Vector3 targetPos = new Vector3(transform.position.x, transform.position.y, 2f);
+            cam.transform.position = Vector3.Lerp(cam.transform.position, targetPos, Time.deltaTime * zoomSpeed);
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, targetFOV, Time.deltaTime * zoomSpeed);
+
+            float t = Mathf.InverseLerp(-7.5f, 2f, cam.transform.position.z);
+            if (uiGroup != null)
+                uiGroup.alpha = 1f - t;
+
+            if (cam.transform.position.z >= 1.95f)
+            {
+                cam.transform.position = targetPos;
+                cam.fieldOfView = targetFOV;
+                zoomingIn = false;
+            }
+        }
+        else  if (zoomingOut)
+        {
+            Vector3 targetPos = startPosition;  // posizione iniziale della camera
+            cam.transform.position = Vector3.Lerp(cam.transform.position, targetPos, Time.deltaTime * zoomSpeed);
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, startFOV, Time.deltaTime * zoomSpeed);
+            if (uiGroup != null)
+                uiGroup.alpha = 1f;
+
+            if (Vector3.Distance(cam.transform.position, targetPos) < 0.05f)
+            {
+                cam.transform.position = targetPos;
+                cam.fieldOfView = startFOV;
+                zoomingOut = false;
+
+                // Evento zoom out finito
+                OnZoomOutComplete?.Invoke();
+            }
+            
         }
     }
-}
-
-
 
 
 
