@@ -65,7 +65,7 @@ def track_movement(mode, results, frame, prev_pos, tracked_hand, hand_count):
             thumb_pos = (int(thumb.x * w), int(thumb.y * h))
             index_pos = (int(index.x * w), int(index.y * h))
             center_pos = (int((thumb.x + index.x)/2 * w), int((thumb.y + index.y)/2 * h))
-            t = 20  # soglia movimento
+            t = 5  # soglia movimento
 
             if mode == "zoom" and hand_count == 1:
                 send_command("mode_zoom")
