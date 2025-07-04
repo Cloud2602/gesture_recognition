@@ -14,6 +14,8 @@ public class UIManager : MonoBehaviour
     public Sprite rotateSprite;
     public Sprite translateSprite;
     public Sprite handsOpenSprite;
+    public Sprite pinchSprite;
+    public Sprite dragSprite;
 
     private string modalitaCorrente = "idle";
 
@@ -80,18 +82,21 @@ public class UIManager : MonoBehaviour
             case "zoom":
                 modalitaText.text = "Mode: Zoom";
                 suggerimentiPanel.SetActive(true);
+                CreaMessaggioConIcona("Pinch to Zoom", pinchSprite);
                 CreaMessaggioConIcona("Choice mode", handsOpenSprite);
                 break;
 
             case "rotate":
                 modalitaText.text = "Mode: Rotation";
                 suggerimentiPanel.SetActive(true);
+                CreaMessaggioConIcona("Move hand to rotate",dragSprite);
                 CreaMessaggioConIcona("Choice mode", handsOpenSprite);
                 break;
 
             case "translate":
                 modalitaText.text = "Mode: Translation";
                 suggerimentiPanel.SetActive(true);
+                CreaMessaggioConIcona("Move hand to translate",dragSprite);
                 CreaMessaggioConIcona("Choice mode", handsOpenSprite);
                 break;
         }

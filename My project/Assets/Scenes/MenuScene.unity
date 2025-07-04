@@ -1078,6 +1078,8 @@ MonoBehaviour:
   rotateSprite: {fileID: 21300000, guid: 75a2e216a441ded459d708a157ca6959, type: 3}
   translateSprite: {fileID: 21300000, guid: 938edc35f25f41d4f92cf9a701d696a4, type: 3}
   handsOpenSprite: {fileID: 21300000, guid: 67615da5ff79c1c4191e26c9b1419f40, type: 3}
+  pinchSprite: {fileID: 21300000, guid: 017dc40eebb607d42ba3f8d224af3ffc, type: 3}
+  dragSprite: {fileID: 21300000, guid: c5c2404b31d299f4fbff5be9bf3fb0cb, type: 3}
 --- !u!1001 &500500512
 PrefabInstance:
   m_ObjectHideFlags: 0
