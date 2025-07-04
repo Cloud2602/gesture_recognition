@@ -85,7 +85,7 @@ def get_landmark_xyz(landmarks, depth_img, h, w):
     return xyz
 
 def predict_gesture(frame, results, right_hand, left_hand, last_prediction, stable_count, depth_image, h, w, display_label=None):
-    stable_threshold = 20
+    stable_threshold = 10
 
     for hand_landmarks, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
         mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
