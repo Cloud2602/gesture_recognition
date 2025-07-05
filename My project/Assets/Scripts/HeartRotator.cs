@@ -14,7 +14,7 @@ public class HeartRotator : MonoBehaviour
 
     void Start()
     {
-        // Cerca il bottone con nome "StartButton" nella scena
+        
         GameObject buttonObj = GameObject.Find("StartButton");
         if (buttonObj != null)
         {
@@ -22,15 +22,15 @@ public class HeartRotator : MonoBehaviour
             if (startButton != null)
                 startButton.onClick.AddListener(OnStartButtonClicked);
             else
-                Debug.LogWarning("StartButton non ha componente Button.");
+                Debug.LogWarning("StartButton doesn't have button component.");
         }
         else
         {
-            Debug.LogWarning("StartButton non trovato in scena.");
+            Debug.LogWarning("StartButton not found in scene.");
         }
     }
 
-   public bool enableStepRotation = false; // Impostalo da Inspector
+   public bool enableStepRotation = false; 
 
     void Update()
     {

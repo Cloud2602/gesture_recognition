@@ -13,18 +13,18 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 def send_command(command):
     message = command.encode('utf-8')
     sock.sendto(message, (UDP_IP, UDP_PORT))
-    print(f"[Python] Inviato comando: {command}")
+    print(f"[Python] Command sent: {command}")
 
 # === CONFIG ===
 model_path = '../with_real_z/best_model.h5'
 mean = np.load('../with_real_z/scaler_mean.npy')
 scale = np.load('../with_real_z/scaler_scale.npy')
 confidence_threshold = 0.6
-radius = 40  # per smoothing profondità
-depth_scale = 0.0001  # solitamente 1mm
+radius = 40  
+depth_scale = 0.0001  
 
 model = load_model(model_path)
-print(" Modello caricato!")
+print(" Model loaded")
 label_map = {
     0: "stop",
     1: "zoom",
@@ -49,9 +49,9 @@ align = rs.align(rs.stream.color)
 
 depth_sensor = profile.get_device().first_depth_sensor()
 depth_scale = depth_sensor.get_depth_scale()
-print(" Scala profondità:", depth_scale)
+print(" Depth Scale:", depth_scale)
 
-# === Stato ===
+# ======
 last_prediction = None
 stable_count = 0
 display_label = "..."
@@ -110,18 +110,14 @@ def predict_gesture(frame, results, right_hand, left_hand, last_prediction, stab
         current_label = "other"
 
     
-   # === STABILIZZAZIONE ===
-    #print(f"Predizione corrente: {current_label}, Ultima predizione: {last_prediction}, Stabilità: {stable_count}")
     if current_label == last_prediction:
         stable_count += 1
-        #print("Stable count:", stable_count)
     else:
         stable_count = 1
         last_prediction = current_label
 
     if stable_count >= stable_threshold:
         display_label = current_label
-        #print(f"Predizione stabile: {display_label}")
         stable_count = 0
 
     return display_label, last_prediction, stable_count, dominant_hand_label 
@@ -203,20 +199,19 @@ try:
                     frame, results, right_hand, left_hand,
                     last_prediction, stable_count, depth_image, h, w
                 )
-                #print(f"Modalità corrente: {mode},Conteggio stabile: {stable_count}")
-
+                
                 if mode == "stop" :
                     if flag == 0 or flag ==2:
                         flag = 1
                         mode = None
                         previous_mode = "Choice"
                         prev_pos = None
-                        print(" Modalità attesa")
+                        print(" Waiting mode")
                         send_command("choose_mode")
                 if flag == 1:
                     if mode != None:
                         flag = 2
-                        print(f" Modalità scelta: {mode}")
+                        print(f" Chosen mode: {mode}")
                         previous_mode = mode
                         tracked_hand = dominant_hand_label
                         mode = None
@@ -227,10 +222,10 @@ try:
                             print("Modalità stop attiva")
                             send_command("default")
                         else:
-                            print("Modalità attiva : ", previous_mode)
+                            print("Active mode : ", previous_mode)
                             prev_pos = track_movement(previous_mode, results, frame, prev_pos, tracked_hand, hand_count)
             else:
-                display_label = " Nessuna mano"
+                display_label = " No hands detected"
 
             cv2.putText(frame, f"Mode': {previous_mode}", (10, 30),
             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
@@ -244,12 +239,10 @@ try:
                 break
         
         except Exception as e:
-            print(f"[Errore]: {e}")
-            # Qui puoi decidere se vuoi continuare il loop o interrompere
-            # Per esempio continua:
+            print(f"[Error]: {e}")
             continue
 
 finally:
     pipeline.stop()
     cv2.destroyAllWindows()
-    print(" Pipeline chiusa")
+    print(" Close Pipeline and windows")

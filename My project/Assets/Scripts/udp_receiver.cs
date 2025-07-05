@@ -17,7 +17,6 @@ public class UDPReceiver : MonoBehaviour
 
     void Start()
     {
-        //  Memorizza la posizione iniziale all'avvio
         initialPosition = transform.position;
         initialRotation = transform.rotation;
         receiveThread = new Thread(new ThreadStart(ReceiveData));
@@ -35,7 +34,7 @@ public class UDPReceiver : MonoBehaviour
                 IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, port);
                 byte[] data = client.Receive(ref anyIP);
                 lastReceivedData = Encoding.UTF8.GetString(data);
-                Debug.Log("[Unity] Ricevuto: " + lastReceivedData);
+                Debug.Log("[Unity] Received: " + lastReceivedData);
             }
             catch (System.Exception err)
             {
@@ -49,7 +48,7 @@ public class UDPReceiver : MonoBehaviour
         
         if (!string.IsNullOrEmpty(lastReceivedData))
         {
-            if (lastReceivedData.StartsWith("[ERRORE MODELLO]"))
+            if (lastReceivedData.StartsWith("[MODEL ERROR]"))
             {
                 Debug.LogError(lastReceivedData);
                 return;
@@ -86,19 +85,17 @@ public class UDPReceiver : MonoBehaviour
                     ResetToInitialPosition(); break;
                 
             }
-            Debug.Log("Gestione UI per: " + lastReceivedData);
-            // GESTIONE UI
-            switch (lastReceivedData)
+            Debug.Log("UI handling for: " + lastReceivedData);
             
+            switch (lastReceivedData)
             {
-
                 case "start":
                 case "default":
                     if (uiManager != null) uiManager.OnStartPremuto();
                     break;
 
                 case "choose_mode":
-                    Debug.Log("Modalità scelta: " + lastReceivedData);
+                    Debug.Log("Chosen mode: " + lastReceivedData);
                     if (uiManager != null) uiManager.OnDueManiRilevate();
                     break;
 
@@ -108,7 +105,6 @@ public class UDPReceiver : MonoBehaviour
                     if (uiManager != null) uiManager.OnModalitaSelezionata(lastReceivedData);
                     break;
             }
-
 
             lastReceivedData = "";
         }
@@ -128,28 +124,26 @@ public class UDPReceiver : MonoBehaviour
 
     void RotateModel(int direction)
     {
-        Vector3 initialUp = initialRotation * Vector3.up;  // Asse Y iniziale
+        Vector3 initialUp = initialRotation * Vector3.up;  
         transform.Rotate(initialUp, 5f * direction, Space.World);
     }
 
     void RotateModelUpDown(int direction)
     {
-        Vector3 initialRight = initialRotation * Vector3.right;  // Asse X iniziale
+        Vector3 initialRight = initialRotation * Vector3.right;  
         transform.Rotate(initialRight, 5f * direction, Space.World);
     }
 
     void StopMovement()
     {
         Debug.Log("Stop movement");
-        // Placeholder
     }
 
-    //  Funzione per tornare alla posizione iniziale
     void ResetToInitialPosition()
     {
-        Debug.Log("Reset alla posizione iniziale");
+        Debug.Log("Reset to inital position");
         transform.position = initialPosition;
-        transform.rotation = Quaternion.identity;  // opzionale: resetta anche rotazione
+        transform.rotation = Quaternion.identity;  
     }
 
     void OnApplicationQuit()

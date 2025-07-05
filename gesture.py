@@ -16,11 +16,11 @@ def send_command(command):
     print(f"[Python] Inviato comando: {command}")
 
 # === CONFIGURAZIONE ===
-model_path = '../with_mediapipe_z/best_model.h5'
-mean = np.load('../with_mediapipe_z/scaler_mean.npy')
-scale = np.load('../with_mediapipe_z/scaler_scale.npy')
+model_path = './with_mediapipe_z/best_model.h5'
+mean = np.load('./with_mediapipe_z/scaler_mean.npy')
+scale = np.load('./with_mediapipe_z/scaler_scale.npy')
 
-confidence_threshold = 0.9  # sotto questa soglia → "altro"
+confidence_threshold = 0.9  
 
 
 # === MAPPATURA CLASSI ===
@@ -31,7 +31,7 @@ label_map = {
     3: "traslazione"
 }
 
-# === CARICA MODELLO ===
+# === LOAD MODEL ===
 model = load_model(model_path)
 print(" Modello caricato!")
 
@@ -41,10 +41,10 @@ hands = mp_hands.Hands(static_image_mode=False, max_num_hands=2,
                        min_detection_confidence=0.7, min_tracking_confidence=0.5)
 mp_drawing = mp.solutions.drawing_utils
 
-# === WEBCAM ===
+
 cap = cv2.VideoCapture(0)
 
-# === STABILIZZATORE DI PREDIZIONE ===
+
 last_prediction = None
 stable_count = 0
 display_label = "..."

@@ -6,8 +6,8 @@ public class UIManager : MonoBehaviour
 {
     [Header("UI Elements")]
     public TextMeshProUGUI modalitaText;
-    public GameObject suggerimentiPanel;           // Vertical Layout Group
-    public GameObject legendaItemPrefab;           // Prefab con Icon + Label
+    public GameObject suggerimentiPanel;           
+    public GameObject legendaItemPrefab;           
 
     [Header("Sprites per le modalità")]
     public Sprite zoomSprite;
@@ -27,14 +27,14 @@ public class UIManager : MonoBehaviour
 
     public void OnDueManiRilevate()
     {
-        Debug.Log("Due mani rilevate, cambio modalità a 'choose_mode'");
+        Debug.Log("Two hands detected, switching mode to 'choose_mode'");
         modalitaCorrente = "choose_mode";
         AggiornaUI();
     }
 
     public void OnModalitaSelezionata(string nuovaModalita)
     {
-        Debug.Log($"Modalità selezionata: {nuovaModalita}");
+        Debug.Log($"Selected mode: {nuovaModalita}");
         switch (nuovaModalita)
         {
             case "mode_zoom":
@@ -56,12 +56,11 @@ public class UIManager : MonoBehaviour
 
     private void AggiornaUI()
     {
-         // Cancella contenuto precedente
         foreach (Transform child in suggerimentiPanel.transform)
             Destroy(child.gameObject);
 
 
-        // Visualizza modalità attuale
+        
         switch (modalitaCorrente)
         {
             case "waiting":

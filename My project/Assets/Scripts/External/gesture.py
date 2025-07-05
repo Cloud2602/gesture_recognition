@@ -15,7 +15,7 @@ def send_command(command):
     sock.sendto(message, (UDP_IP, UDP_PORT))
     print(f"[Python] Inviato comando: {command}")
 
-# === CONFIGURAZIONE ===
+
 model_path = '../with_mediapipe_z/best_model.h5'
 mean = np.load('../with_mediapipe_z/scaler_mean.npy')
 scale = np.load('../with_mediapipe_z/scaler_scale.npy')
@@ -57,7 +57,7 @@ def track_movement(mode, results, frame, prev_pos, tracked_hand, hand_count):
             label = "Left" if label == "Right" else "Right"
 
             if label != tracked_hand:
-                continue  # ❌ ignora le mani che non sono quella tracciata
+                continue  #  ignora le mani che non sono quella tracciata
             thumb = hand_landmarks.landmark[4]
             index = hand_landmarks.landmark[8]
 

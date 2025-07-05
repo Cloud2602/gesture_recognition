@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class HeartPartsManager : MonoBehaviour
 {
-    [Header("Riferimenti alle parti del cuore")]
+    [Header("References at Heart Parts")]
     public GameObject aorta;
     public GameObject leftAtrium;
     public GameObject leftVentricle;
@@ -38,7 +38,7 @@ public class HeartPartsManager : MonoBehaviour
     toggleRightVentricle.isOn = true;
     toggleVenaCava.isOn = true;
     
-    // Altri toggle → visibilità
+   
     toggleAorta.onValueChanged.AddListener((val) => aorta.SetActive(val));
     toggleLeftAtrium.onValueChanged.AddListener((val) => leftAtrium.SetActive(val));
     toggleLeftVentricle.onValueChanged.AddListener((val) => leftVentricle.SetActive(val));
@@ -47,7 +47,7 @@ public class HeartPartsManager : MonoBehaviour
     toggleRightVentricle.onValueChanged.AddListener((val) => rightVentricle.SetActive(val));
     toggleVenaCava.onValueChanged.AddListener((val) => venaCava.SetActive(val));
 
-    // Solo le camere coinvolte aggiornano il volume
+    
     toggleLeftAtrium.onValueChanged.AddListener((val) => OnToggleChanged());
     toggleLeftVentricle.onValueChanged.AddListener((val) => OnToggleChanged());
     toggleRightAtrium.onValueChanged.AddListener((val) => OnToggleChanged());
@@ -74,7 +74,7 @@ public class HeartPartsManager : MonoBehaviour
             togglePulmonaryArtery.isOn ||
             toggleVenaCava.isOn;
 
-        // Mostra volume SOLO se una camera è attiva e gli altri sono tutti disattivati
+       
         if (cameraCount == 1 && !altriAttivi)
         {
             volumePanel.SetActive(true);
@@ -90,7 +90,7 @@ public class HeartPartsManager : MonoBehaviour
 
     int GetVolume(string parte)
     {
-        // Valori di esempio, puoi personalizzarli
+       
         switch (parte)
         {
             case "Right Atrium": return 52;

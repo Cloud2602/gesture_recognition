@@ -3,10 +3,10 @@ using UnityEngine;
 public class CameraZoom : MonoBehaviour
 {
     public System.Action OnZoomOutComplete;
-    public Transform zoomTarget;       // Oggetto verso cui zoommare (es. il cuore o sfera)
-    public float zoomSpeed = 1.5f;     // Velocità dello zoom
-    public float targetFOV = 30f;      // Field of View finale della camera
-    public CanvasGroup uiGroup;        // Riferimento al CanvasGroup per il fade UI
+    public Transform zoomTarget;       
+    public float zoomSpeed = 1.5f;     
+    public float targetFOV = 30f;      
+    public CanvasGroup uiGroup;        
 
     private Camera cam;
     private bool zoomingIn = false;
@@ -56,7 +56,7 @@ public class CameraZoom : MonoBehaviour
         }
         else  if (zoomingOut)
         {
-            Vector3 targetPos = startPosition;  // posizione iniziale della camera
+            Vector3 targetPos = startPosition;  
             cam.transform.position = Vector3.Lerp(cam.transform.position, targetPos, Time.deltaTime * zoomSpeed);
             cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, startFOV, Time.deltaTime * zoomSpeed);
             if (uiGroup != null)
@@ -68,7 +68,7 @@ public class CameraZoom : MonoBehaviour
                 cam.fieldOfView = startFOV;
                 zoomingOut = false;
 
-                // Evento zoom out finito
+                
                 OnZoomOutComplete?.Invoke();
             }
             

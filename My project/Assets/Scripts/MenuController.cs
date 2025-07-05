@@ -17,7 +17,7 @@ public class MenuController : MonoBehaviour
         if (cameraZoom != null)
         cameraZoom.OnZoomOutComplete += HandleZoomOutComplete;
 
-        // Nascondi instruction panel all'avvio
+        
         if (GesturePanel != null)
             GesturePanel.SetActive(false);
 
@@ -27,11 +27,11 @@ public class MenuController : MonoBehaviour
 
     public void onHomePressed()
     {
-        // Mostra menu iniziale
+        
         if (uiGroupToHide != null)
             uiGroupToHide.SetActive(true);
 
-        // Nascondi gesture e parti cuore
+        
         if (GesturePanel != null)
             GesturePanel.SetActive(false);
 
@@ -57,8 +57,8 @@ public class MenuController : MonoBehaviour
 
     private void StartPythonScript()
     {
-        string pythonExePath = "C:/Users/franc/anaconda3/envs/Soluzione_ddd/python.exe"; // oppure "python3" o il path completo, es: "C:/Python39/python.exe"
-        string scriptPath = Application.dataPath + "/Scripts/External/gesture_real_sense.py"; // cambia il path se serve
+        string pythonExePath = "C:/Users/franc/anaconda3/envs/Soluzione_ddd/python.exe"; 
+        string scriptPath = Application.dataPath + "/Scripts/External/gesture.py"; 
 
         ProcessStartInfo start = new ProcessStartInfo();
         start.FileName = pythonExePath;
@@ -89,17 +89,17 @@ public class MenuController : MonoBehaviour
 
     private IEnumerator StartSequence()
     {
-        // 1. Avvia zoom
+        
         cameraZoom.StartZoomIn();
 
-        // 2. Attendi che lo zoom finisca
+        
         yield return new WaitForSeconds(1.5f); 
 
-        // 3. Nascondi UI menu
+        
         if (uiGroupToHide != null)
             uiGroupToHide.SetActive(false);
 
-        // 4. Ferma rotazione cuore
+        
         if (heart != null)
         {
             HeartRotator rot = heart.GetComponent<HeartRotator>();
@@ -107,7 +107,7 @@ public class MenuController : MonoBehaviour
                 rot.enabled = false;
         }
 
-        // 5. Mostra instruction panel
+        
         if (GesturePanel != null)
             GesturePanel.SetActive(true);
 
@@ -133,24 +133,18 @@ public class MenuController : MonoBehaviour
             {
                 pythonProcess.Kill();
                 pythonProcess.Dispose();
-                UnityEngine.Debug.Log("Processo Python terminato.");
+                UnityEngine.Debug.Log("Python process closed successfully.");
             }
             catch (System.Exception e)
             {
-                UnityEngine.Debug.LogWarning("Errore durante la chiusura del processo Python: " + e.Message);
+                UnityEngine.Debug.LogWarning("Error during the closing of the python process: " + e.Message);
             }
         }
     }
 
     public void HandleZoomOutComplete()
     {
-        // Questa funzione viene chiamata appena finito lo zoom out
-
         
-
-    
-
-        // Se vuoi riattiva rotazione cuore o altre azioni
         if (heart != null)
         {
             var rot = heart.GetComponent<HeartRotator>();
