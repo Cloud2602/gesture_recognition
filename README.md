@@ -103,7 +103,6 @@ The repository includes the following main components:
 
 - `My project/` — Unity project folder for 3D visualization and gesture interaction.
 - `with_real_z/` — Python code and datasets using real depth values from the RealSense camera.
-- `with_mediapipe_z/` — Alternative version using MediaPipe’s estimated depth (z) values.
 - `gesture_recognition_3D.ipynb` — Main notebook to train and evaluate the gesture classifier.
 - `requirements.txt` — Python dependencies.
 - `segmentation.zip` — Exported 3D heart mesh.
@@ -114,7 +113,7 @@ The repository includes the following main components:
 
 1. **Train the model (optional)**  
    You can train the classifier by running `gesture_recognition_3D.ipynb` in Google Colab or locally.  
-   The notebook internally runs `train.py` and supports both the `with_real_z/` and `with_mediapipe_z/` datasets.  
+   The notebook internally runs `train.py` and supports the `with_real_z/`dataset.  
    👉 If you don’t want to train the model, simply use the provided pre-trained model `with_real_z/best_model.h5`.
 
 2. **Launch Unity Scene**  
