@@ -105,7 +105,6 @@ The repository includes the following main components:
 - `gesture_recognition_3D.ipynb` — Main notebook to train and evaluate the gesture classifier.
 - `requirements.txt` — Python dependencies.
 - `segmentation.zip` — Exported 3D heart mesh.
-- `best_model.h5` — Pre-trained MLP model ready for real-time inference.
 
 ---
 
@@ -129,6 +128,5 @@ Watch the real-time gesture recognition and 3D heart interaction in action:
 
 📽️ **[Click here to watch the demo](media/final_demo.mp4)**
 
-```
 
 
