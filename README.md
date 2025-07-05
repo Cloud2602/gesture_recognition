@@ -38,7 +38,9 @@ Below are examples from the RGB-D dataset and the 3D heart mesh:
 
 ### 🫀 Processed Heart Mesh
 
-![Heart Mesh](media/cuore_mesh.png)
+<p align="center">
+  <img src="media/cuore_mesh.png" alt="Heart Mesh" width="200"/>
+</p>
 
 ---
 
