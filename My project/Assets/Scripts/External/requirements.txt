@@ -1,0 +1,5 @@
+pyrealsense2==2.53.1.4623  #Change based on SDK version
+opencv-python>=4.5.0
+numpy>=1.19.0
+mediapipe>=0.10.0
+tensorflow>=2.8.0
