@@ -127,8 +127,10 @@ The repository includes the following main components:
 ## 🎥 Final Demo Video
 
 Watch the real-time gesture recognition and 3D heart interaction in action:
+<p>
+  <img src= media/demo_cut.gif alt = "Demo" width= "500"/>
+</p>
 
-📽️ **[Click here to watch the demo](media/final_demo.mp4)**
 
 
 
