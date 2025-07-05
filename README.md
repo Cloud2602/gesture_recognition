@@ -34,7 +34,7 @@ Below are examples from the RGB-D dataset and the 3D heart mesh:
 
 | RGB Frame                            | Depth Map                            |
 |-------------------------------------|--------------------------------------|
-| ![RGB Sample](media/color_1.png) | ![Depth Sample](media/depth_1.png) |
+| ![RGB Sample](media/color_1.jpg) | ![Depth Sample](media/depth_1.jpg) |
 
 ### 🫀 Processed Heart Mesh
 
